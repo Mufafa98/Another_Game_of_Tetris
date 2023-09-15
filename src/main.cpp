@@ -18,6 +18,14 @@ int main(){
                     window.close();
                     break;
                 }
+                case Event::KeyPressed:
+                {
+                    if(Keyboard::isKeyPressed(Keyboard::Right))
+                        game.NewTile();
+                    else if(Keyboard::isKeyPressed(Keyboard::Space))
+                        game.RotateTile();
+                    break;
+                }
                 default:
                     break;
             }
