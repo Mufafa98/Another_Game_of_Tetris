@@ -6,6 +6,7 @@ using namespace sf;
 
 
 int main(){
+    Clock tile_drop_speed;
     Game game;
     RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Another_Game_of_Tetris", Style::Close | Style::Titlebar);
     window.setVerticalSyncEnabled(true);
@@ -21,7 +22,9 @@ int main(){
                 case Event::KeyPressed:
                 {
                     if(Keyboard::isKeyPressed(Keyboard::Right))
-                        game.NewTile();
+                        game.MoveRight();
+                    else if(Keyboard::isKeyPressed(Keyboard::Left))
+                        game.MoveLeft();
                     else if(Keyboard::isKeyPressed(Keyboard::Space))
                         game.RotateTile();
                     break;
@@ -29,6 +32,12 @@ int main(){
                 default:
                     break;
             }
+        }
+
+        if(tile_drop_speed.getElapsedTime().asMilliseconds() >= 550)
+        {
+            tile_drop_speed.restart();
+            game.LowerTile();
         }
         window.clear();
         game.Draw(window);

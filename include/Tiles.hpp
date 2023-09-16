@@ -156,6 +156,8 @@ const Color tile_color[number_of_tile_colors] = {
 
 class Tiles{
 protected:
+    short tile_type;
+    short state;
     float texture_size;
     Vector2f possition;
     RectangleShape graphical_shape[4][4];
@@ -163,7 +165,11 @@ protected:
     Texture current_texture;
 public:
     virtual void Rotate() = 0;
-    virtual void Draw(RenderWindow& window);
+    void FitOnX();
+    void LowerTile();
+    void MoveRight();
+    void MoveLeft();
+    void Draw(RenderWindow& window);
 };
 class No1 : public Tiles{
 public:
@@ -171,37 +177,31 @@ public:
     void Rotate(){};
 };
 class No2 : public Tiles{
-    short state;
 public:
     No2(const float texture_size, const Texture texture);
     void Rotate();
 };
 class No3 : public Tiles{
-    short state;
 public:
     No3(const float texture_size, const Texture texture);
     void Rotate();
 };
 class No4 : public Tiles{
-    short state;
 public:
     No4(const float texture_size, const Texture texture);
     void Rotate();
 };
 class No5 : public Tiles{
-    short state;
 public:
     No5(const float texture_size, const Texture texture);
     void Rotate();
 };
 class No6 : public Tiles{
-    short state;
 public:
     No6(const float texture_size, const Texture texture);
     void Rotate();
 };
 class No7 : public Tiles{
-    short state;
 public:
     No7(const float texture_size, const Texture texture);
     void Rotate();
