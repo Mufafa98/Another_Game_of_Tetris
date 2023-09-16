@@ -21,7 +21,7 @@ private:
     static const int size_tile_reg_width = 12;
     int tile_reg[size_tile_reg_height][size_tile_reg_width];
     int current_tile_type;
-    Tiles* current_tile[7];
+    Tiles* current_tile;
     Texture tile_texture;
     GameBackground *background;
 public:
@@ -30,5 +30,8 @@ public:
 
     void NewTile();
     void RotateTile();
+    void LowerTile();
+    void MoveRight();
+    void MoveLeft();
     void Draw(RenderWindow& window);
 };

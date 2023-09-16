@@ -9,19 +9,13 @@ Game::Game()
         for(int j = 0; j< size_tile_reg_width; j++)
             tile_reg[i][j] = 0;
 
-    current_tile[0] = new No1(texture_size, tile_texture);
-    current_tile[1] = new No2(texture_size, tile_texture);
-    current_tile[2] = new No3(texture_size, tile_texture);
-    current_tile[3] = new No4(texture_size, tile_texture);
-    current_tile[4] = new No5(texture_size, tile_texture);
-    current_tile[5] = new No6(texture_size, tile_texture);
-    current_tile[6] = new No7(texture_size, tile_texture);
+    current_tile = new No2(texture_size, tile_texture);
 }
 
 Game::~Game()
 {
     delete background;
-    delete[] current_tile;
+    delete current_tile;
 }
 
 void Game::NewTile()
@@ -32,13 +26,28 @@ void Game::NewTile()
 
 void Game::RotateTile()
 {
-    current_tile[current_tile_type]->Rotate();
+    current_tile->Rotate();
+}
+
+void Game::LowerTile()
+{
+    current_tile->LowerTile();
+}
+
+void Game::MoveRight()
+{
+    current_tile->MoveRight();
+}
+
+void Game::MoveLeft()
+{
+    current_tile->MoveLeft();
 }
 
 void Game::Draw(RenderWindow &window)
 {
     background->Draw(window);
-    current_tile[current_tile_type]->Draw(window);
+    current_tile->Draw(window);
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)

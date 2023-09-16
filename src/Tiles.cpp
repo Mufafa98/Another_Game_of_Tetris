@@ -1,4 +1,90 @@
 #include "Tiles.hpp"
+//any fix for 3,4,5,6,7?
+void Tiles::FitOnX()
+{
+    int pos_x = 0;
+    if(tile_type == 2)
+    {
+        if(state == 0)
+            pos_x = possition.x + 1 * texture_size;
+        else
+            pos_x = possition.x + 4 * texture_size;
+    }
+    else
+    {
+        if(state % 2)
+            pos_x = possition.x + 3 * texture_size;
+        else
+            pos_x = possition.x + 2 * texture_size;
+    }
+    if(pos_x > WINDOW_WIDTH / 4 + 13 * texture_size)
+        if(tile_type == 2)
+        {
+            if(state == 1)
+                possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 3 * texture_size;
+        }
+        else
+        {
+            if(state % 2)
+                possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 2 * texture_size;
+            else
+                possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 2 * texture_size;
+        }
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+            graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
+}
+
+void Tiles::LowerTile()
+{
+    if(possition.y > WINDOW_HEIGHT - 5 * texture_size)
+        return;
+    possition.y = possition.y + texture_size;
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+            graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
+}
+
+void Tiles::MoveRight()
+{
+    int pos_x = 0;
+    if(tile_type == 1)
+    {
+        pos_x = possition.x + 2 * texture_size;
+    }
+    else if(tile_type == 2)
+    {
+        if(state == 0)
+            pos_x = possition.x + 1 * texture_size;
+        else
+            pos_x = possition.x + 4 * texture_size;
+    }
+    else
+    {
+        if(state % 2)
+            pos_x = possition.x + 3 * texture_size;
+        else
+            pos_x = possition.x + 2 * texture_size;
+    }
+    if(pos_x > WINDOW_WIDTH / 4 + 12 * texture_size)
+        return;
+    possition.x = possition.x + texture_size;
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+            graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
+
+}
+
+void Tiles::MoveLeft()
+{
+    if(possition.x < WINDOW_WIDTH / 4 + texture_size)
+        return;
+    possition.x = possition.x - texture_size;
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+            graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
+
+}
 
 void Tiles::Draw(RenderWindow &window)
 {
@@ -9,9 +95,10 @@ void Tiles::Draw(RenderWindow &window)
 
 No1::No1(const float texture_size, const Texture texture)
 {
+    tile_type = 1;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     bool temp[4][4] = {
         {0, 0, 0, 0},
@@ -34,10 +121,11 @@ No1::No1(const float texture_size, const Texture texture)
 
 No2::No2(const float texture_size, const Texture texture)
 {
+    tile_type = 2;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
     state = 0;
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -56,6 +144,8 @@ void No2::Rotate()
 {
     state++;
     state %= 2;
+
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {
@@ -67,16 +157,17 @@ void No2::Rotate()
                 graphical_shape[i][j].setTexture(&current_texture);
             }
             else
-                graphical_shape[i][j].setFillColor(Color(0,0,0));
+                graphical_shape[i][j].setFillColor(Color(0,0,0,0));
         }
 }
 
 No3::No3(const float texture_size, const Texture texture)
 {
+    tile_type = 3;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
     state = 0;
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -94,6 +185,7 @@ void No3::Rotate()
 {
     state++;
     state %= 4;
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {
@@ -105,16 +197,17 @@ void No3::Rotate()
                 graphical_shape[i][j].setTexture(&current_texture);
             }
             else
-                graphical_shape[i][j].setFillColor(Color(0,0,0));
+                graphical_shape[i][j].setFillColor(Color(0,0,0,0));
         }
 }
 
 No4::No4(const float texture_size, const Texture texture)
 {
+    tile_type = 4;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
     state = 0;
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -132,6 +225,7 @@ void No4::Rotate()
 {
     state++;
     state %= 4;
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {
@@ -143,16 +237,17 @@ void No4::Rotate()
                 graphical_shape[i][j].setTexture(&current_texture);
             }
             else
-                graphical_shape[i][j].setFillColor(Color(0,0,0));
+                graphical_shape[i][j].setFillColor(Color(0,0,0,0));
         }
 }
 
 No5::No5(const float texture_size, const Texture texture)
 {
+    tile_type = 5;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
     state = 0;
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -170,6 +265,7 @@ void No5::Rotate()
 {
     state++;
     state %= 4;
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {
@@ -181,16 +277,17 @@ void No5::Rotate()
                 graphical_shape[i][j].setTexture(&current_texture);
             }
             else
-                graphical_shape[i][j].setFillColor(Color(0,0,0));
+                graphical_shape[i][j].setFillColor(Color(0,0,0,0));
         }
 }
 
 No6::No6(const float texture_size, const Texture texture)
 {
+    tile_type = 6;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
     state = 0;
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -208,6 +305,7 @@ void No6::Rotate()
 {
     state++;
     state %= 2;
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {
@@ -219,16 +317,17 @@ void No6::Rotate()
                 graphical_shape[i][j].setTexture(&current_texture);
             }
             else
-                graphical_shape[i][j].setFillColor(Color(0,0,0));
+                graphical_shape[i][j].setFillColor(Color(0,0,0,0));
         }
 }
 
 No7::No7(const float texture_size, const Texture texture)
 {
+    tile_type = 7;
     current_texture = texture;
     current_color = tile_color[rand() % number_of_tile_colors];
     state = 0;
-    possition = Vector2f(WINDOW_WIDTH/4 + texture_size, 0);
+    possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -246,6 +345,7 @@ void No7::Rotate()
 {
     state++;
     state %= 2;
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {
@@ -257,7 +357,7 @@ void No7::Rotate()
                 graphical_shape[i][j].setTexture(&current_texture);
             }
             else
-                graphical_shape[i][j].setFillColor(Color(0,0,0));
+                graphical_shape[i][j].setFillColor(Color(0,0,0,0));
         }
 }
 
