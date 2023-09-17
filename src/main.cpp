@@ -27,6 +27,8 @@ int main(){
                         game.MoveLeft();
                     else if(Keyboard::isKeyPressed(Keyboard::Space))
                         game.RotateTile();
+                    else if(Keyboard::isKeyPressed(Keyboard::Down))
+                        game.MoveToLowest();
                     break;
                 }
                 default:

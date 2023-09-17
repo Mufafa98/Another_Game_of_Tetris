@@ -2,6 +2,7 @@
 #include <cmath>
 #include "SFML/Graphics.hpp"
 #include "Props.hpp"
+#include "Colors.hpp"
 using namespace sf;
 //  Tile type:      1.      2.      3.      4.      5.      6.      7.
 //                  ....    #...    ....    ....    ....    ....    ....
@@ -143,21 +144,14 @@ const bool no7[2][4][4] =
     }
 };
 
-const static short int number_of_tile_colors = 7;
-const Color tile_color[number_of_tile_colors] = {
-    Color(0, 238, 255),
-    Color(0, 0, 255),
-    Color(255, 162, 0),
-    Color(238, 255, 5),
-    Color(5, 250, 17),
-    Color(129, 5, 252),
-    Color(255, 0, 0)
-};
 
 class Tiles{
 protected:
+    short y_pos = -4;
+    short x_pos = 6;
     short tile_type;
     short state;
+    short color_idx;
     float texture_size;
     Vector2f possition;
     RectangleShape graphical_shape[4][4];
@@ -166,6 +160,14 @@ protected:
 public:
     virtual void Rotate() = 0;
     void FitOnX();
+    bool CheckUnder(int tile_reg[21][12]);
+
+    short GetX();
+    short GetY();
+    short GetType();
+    short GetState();
+    short GetColorIdx();
+
     void LowerTile();
     void MoveRight();
     void MoveLeft();
