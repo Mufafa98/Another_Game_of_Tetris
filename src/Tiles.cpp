@@ -35,11 +35,56 @@ void Tiles::FitOnX()
             graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
 }
 
+bool Tiles::CheckUnder(int tile_reg[21][12])
+{
+    
+    if(y_pos + 5 == 22)
+        return false;
+    return true;
+    switch (tile_type)
+    {
+        case 1:
+        {
+            
+            break;
+        }
+        
+        default:
+            break;
+    }
+}
+
+short Tiles::GetX()
+{
+    return x_pos;
+}
+
+short Tiles::GetY()
+{
+    return y_pos;
+}
+
+short Tiles::GetType()
+{
+    return tile_type;
+}
+
+short Tiles::GetState()
+{
+    return state;
+}
+
+short Tiles::GetColorIdx()
+{
+    return color_idx;
+}
+
 void Tiles::LowerTile()
 {
     if(possition.y > WINDOW_HEIGHT - 5 * texture_size)
         return;
     possition.y = possition.y + texture_size;
+    y_pos++;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
             graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
@@ -68,6 +113,7 @@ void Tiles::MoveRight()
     }
     if(pos_x > WINDOW_WIDTH / 4 + 12 * texture_size)
         return;
+    x_pos++;
     possition.x = possition.x + texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -79,6 +125,7 @@ void Tiles::MoveLeft()
 {
     if(possition.x < WINDOW_WIDTH / 4 + texture_size)
         return;
+    x_pos--;
     possition.x = possition.x - texture_size;
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
@@ -97,7 +144,8 @@ No1::No1(const float texture_size, const Texture texture)
 {
     tile_type = 1;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     bool temp[4][4] = {
@@ -123,8 +171,8 @@ No2::No2(const float texture_size, const Texture texture)
 {
     tile_type = 2;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
-    state = 0;
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);    state = 0;
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
@@ -165,8 +213,8 @@ No3::No3(const float texture_size, const Texture texture)
 {
     tile_type = 3;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
-    state = 0;
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);    state = 0;
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
@@ -205,8 +253,8 @@ No4::No4(const float texture_size, const Texture texture)
 {
     tile_type = 4;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
-    state = 0;
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);    state = 0;
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
@@ -245,8 +293,8 @@ No5::No5(const float texture_size, const Texture texture)
 {
     tile_type = 5;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
-    state = 0;
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);    state = 0;
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
@@ -285,8 +333,8 @@ No6::No6(const float texture_size, const Texture texture)
 {
     tile_type = 6;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
-    state = 0;
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);    state = 0;
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)
@@ -325,8 +373,8 @@ No7::No7(const float texture_size, const Texture texture)
 {
     tile_type = 7;
     current_texture = texture;
-    current_color = tile_color[rand() % number_of_tile_colors];
-    state = 0;
+    color_idx = rand() % 7;
+    current_color = Colors::ReturnByIndex(color_idx);    state = 0;
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
     for(int i = 0; i < 4; i++)

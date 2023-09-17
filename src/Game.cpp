@@ -7,9 +7,15 @@ Game::Game()
     background = new GameBackground(tile_texture, texture_size);
     for(int i = 0; i < size_tile_reg_height; i++)
         for(int j = 0; j< size_tile_reg_width; j++)
+        {
             tile_reg[i][j] = 0;
+            tile_reg_display[i][j].setSize(Vector2f(texture_size, texture_size));
+            tile_reg_display[i][j].setTexture(&tile_texture);
+            tile_reg_display[i][j].setPosition(Vector2f(WINDOW_WIDTH / 4 + j * texture_size + texture_size, i * texture_size));
+            tile_reg_display[i][j].setFillColor(Color::Transparent);
+        }
+    current_tile = new No1(texture_size, tile_texture);
 
-    current_tile = new No2(texture_size, tile_texture);
 }
 
 Game::~Game()
@@ -20,8 +26,34 @@ Game::~Game()
 
 void Game::NewTile()
 {
-    current_tile_type++;
-    current_tile_type %= 7;
+    int value = rand() % 7 + 1;
+    switch (value)
+    {
+        case 1:
+            current_tile = new No1(texture_size, tile_texture);
+            break;
+        case 2:
+            current_tile = new No2(texture_size, tile_texture);
+            break;
+        case 3:
+            current_tile = new No3(texture_size, tile_texture);
+            break;
+        case 4:
+            current_tile = new No4(texture_size, tile_texture);
+            break;
+        case 5:
+            current_tile = new No5(texture_size, tile_texture);
+            break;
+        case 6:
+            current_tile = new No6(texture_size, tile_texture);
+            break;
+        case 7:
+            current_tile = new No7(texture_size, tile_texture);
+            break;
+        
+        default:
+            break;
+    }
 }
 
 void Game::RotateTile()
@@ -31,7 +63,119 @@ void Game::RotateTile()
 
 void Game::LowerTile()
 {
-    current_tile->LowerTile();
+    if(current_tile->CheckUnder(tile_reg))
+        current_tile->LowerTile();
+    else
+    {
+        short i = current_tile->GetY();
+        short j = current_tile->GetX() - 1;
+        short last_i = i + 4;
+        short last_j = j + 4;
+        short tile_type = current_tile->GetType();
+        short tile_state = current_tile->GetState();
+        short temp_i = 0;
+        short temp_j = 0;
+        short color_idx = current_tile->GetColorIdx();
+        while(i < last_i)
+        {
+            j = current_tile->GetX() - 1;
+            temp_j = 0;
+            while(j < last_j)
+            {
+                if(j >= size_tile_reg_width)
+                    break;
+                switch (tile_type)
+                {
+                    case 1:
+                    {
+                        if(no1[temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    case 2:
+                    {
+                        if(no2[tile_state][temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    case 3:
+                    {
+                        if(no3[tile_state][temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    case 4:
+                    {
+                        if(no4[tile_state][temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    case 5:
+                    {
+                        if(no5[tile_state][temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    case 6:
+                    {
+                        if(no6[tile_state][temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    case 7:
+                    {
+                        if(no7[tile_state][temp_i][temp_j])
+                        {
+                            tile_reg[i][j] = 1;
+                            Color tile_color = Colors::ReturnByIndex(color_idx);
+                            tile_color.a = tile_reg[i][j] * 255;
+                            tile_reg_display[i][j].setFillColor(tile_color);
+                        }
+                        break;
+                    }
+                    default:
+                        break;
+                }
+                j++;
+                temp_j++;
+            }
+            if(i >= size_tile_reg_height)
+                break;
+            i++;
+            temp_i++;
+        }
+        this->NewTile();
+    }
 }
 
 void Game::MoveRight()
@@ -44,9 +188,24 @@ void Game::MoveLeft()
     current_tile->MoveLeft();
 }
 
+void Game::MoveToLowest()
+{
+    while(current_tile->CheckUnder(tile_reg))
+    {
+        this->LowerTile();
+    }
+}
+
 void Game::Draw(RenderWindow &window)
 {
     background->Draw(window);
+    for(int i = 0; i < size_tile_reg_height; i++)
+    {
+        for(int j = 0; j<size_tile_reg_width; j++)
+        {
+            window.draw(tile_reg_display[i][j]);
+        }
+    }
     current_tile->Draw(window);
 }
 

@@ -20,6 +20,7 @@ private:
     static const int size_tile_reg_height = 21;
     static const int size_tile_reg_width = 12;
     int tile_reg[size_tile_reg_height][size_tile_reg_width];
+    RectangleShape tile_reg_display[size_tile_reg_height][size_tile_reg_width];
     int current_tile_type;
     Tiles* current_tile;
     Texture tile_texture;
@@ -33,5 +34,6 @@ public:
     void LowerTile();
     void MoveRight();
     void MoveLeft();
+    void MoveToLowest();
     void Draw(RenderWindow& window);
 };
