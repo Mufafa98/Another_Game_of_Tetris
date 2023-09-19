@@ -26,6 +26,7 @@ Game::~Game()
 
 void Game::NewTile()
 {
+
     int value = rand() % 7 + 1;
     switch (value)
     {
@@ -174,8 +175,11 @@ void Game::LowerTile()
             i++;
             temp_i++;
         }
+        
         this->NewTile();
     }
+
+    
 }
 
 void Game::MoveRight()

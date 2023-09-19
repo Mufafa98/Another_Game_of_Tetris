@@ -1,5 +1,5 @@
 #include "Tiles.hpp"
-//any fix for 3,4,5,6,7?
+//bug on move to far right > rotate > lower
 void Tiles::FitOnX()
 {
     int pos_x = 0;
@@ -21,35 +21,154 @@ void Tiles::FitOnX()
         if(tile_type == 2)
         {
             if(state == 1)
+            {
                 possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 3 * texture_size;
+                x_pos -= ((pos_x - WINDOW_WIDTH / 4) / texture_size);
+            }
         }
         else
         {
             if(state % 2)
+            {
                 possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 2 * texture_size;
+                x_pos -= ((pos_x - WINDOW_WIDTH / 4) / texture_size);
+            }
             else
+            {
                 possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 2 * texture_size;
+                x_pos -= ((pos_x - WINDOW_WIDTH / 4) / texture_size);
+            }
         }
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
             graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
 }
-
+//to do check on right and left
 bool Tiles::CheckUnder(int tile_reg[21][12])
 {
     
-    if(y_pos + 5 == 22)
+    if(y_pos == 17)
         return false;
-    return true;
     switch (tile_type)
     {
         case 1:
         {
-            
+            if(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos - 1])
+                return false;
+            return true;
             break;
         }
-        
+        case 2:
+        {
+            if(state == 0)
+            {
+                if(tile_reg[y_pos + 4][x_pos - 1])
+                    return false;
+                return true;
+            }
+            else
+            {
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1] || tile_reg[y_pos + 4][x_pos + 2])
+                    return false;
+                return true;
+            }
+        }
+        case 3:
+        {
+            if(state == 0)
+            {
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 3][x_pos])
+                    return false;
+                return true;
+            }else if(state == 1){
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1])
+                    return false;
+                return true;
+            }else if(state == 2){
+                if(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos - 1])
+                    return false;
+                return true;
+            }else{
+                if(tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos + 1])
+                    return false;
+                return true;
+            }
+            break;
+        }
+        case 4:
+        {
+            if(state == 0)
+            {
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos])
+                    return false;
+                return true;
+            }else if(state == 1){
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1])
+                    return false;
+                return true;
+            }else if(state == 2){
+                if(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 2][x_pos - 1])
+                    return false;
+                return true;
+            }else{
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 3][x_pos] || tile_reg[y_pos + 3][x_pos + 1])
+                    return false;
+                return true;
+            }
+            break;
+        }
+        case 5:
+        {
+            if(state == 0)
+            {
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos])
+                    return false;
+                return true;
+            }else if(state == 1){
+                if(tile_reg[y_pos + 4][x_pos + 1] || tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 3][x_pos])
+                    return false;
+                return true;
+            }else if(state == 2){
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 2][x_pos])
+                    return false;
+                return true;
+            }else{
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1])
+                    return false;
+                return true;
+            }
+            break;
+        }
+        case 6:
+        {
+            if(state == 0)
+            {
+                if(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos - 1])
+                    return false;
+                return true;
+            }else if(state == 1){
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos + 1])
+                    return false;
+                return true;
+            }
+            break;
+        }
+        case 7:
+        {
+            if(state == 0)
+            {
+                if(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 3][x_pos])
+                    return false;
+                return true;
+            }else if(state == 1){
+                if(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1] || tile_reg[y_pos + 3][x_pos - 1])
+                    return false;
+                return true;
+            }
+            break;
+        }
         default:
+            return true;
             break;
     }
 }
@@ -81,7 +200,7 @@ short Tiles::GetColorIdx()
 
 void Tiles::LowerTile()
 {
-    if(possition.y > WINDOW_HEIGHT - 5 * texture_size)
+    if(possition.y > WINDOW_HEIGHT - 4 * texture_size)
         return;
     possition.y = possition.y + texture_size;
     y_pos++;
