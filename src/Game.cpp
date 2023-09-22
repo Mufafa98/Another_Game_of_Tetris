@@ -17,7 +17,6 @@ Game::Game()
     NewTile();
 
 }
-
 Game::~Game()
 {
     delete background;
@@ -26,6 +25,7 @@ Game::~Game()
 
 void Game::NewTile()
 {
+    //current_tile = new No6(texture_size, tile_texture);return;
     int value = rand() % 7 + 1;
     switch (value)
     {
@@ -58,7 +58,8 @@ void Game::NewTile()
 
 void Game::RotateTile()
 {
-    current_tile->Rotate();
+    if (current_tile->CheckForRotation(tile_reg))
+        current_tile->Rotate();
 }
 
 void Game::LowerTile()
@@ -143,6 +144,7 @@ void Game::LowerTile()
                     }
                     case 6:
                     {
+                        
                         if(no6[tile_state][temp_i][temp_j])
                         {
                             tile_reg[i][j] = 1;
@@ -177,18 +179,19 @@ void Game::LowerTile()
         
         this->NewTile();
     }
-
     
 }
 
 void Game::MoveRight()
 {
-    current_tile->MoveRight();
+    if(current_tile->CheckRight(tile_reg))
+        current_tile->MoveRight();
 }
 
 void Game::MoveLeft()
 {
-    current_tile->MoveLeft();
+    if(current_tile->CheckLeft(tile_reg))
+        current_tile->MoveLeft();
 }
 
 void Game::MoveToLowest()

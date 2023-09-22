@@ -158,10 +158,12 @@ protected:
     Color current_color;
     Texture current_texture;
 public:
-    //solve rotation bug
     virtual void Rotate() = 0;
     void FitOnX();
     bool CheckUnder(int tile_reg[21][12]);
+    bool CheckLeft(int tile_reg[21][12]);
+    bool CheckRight(int tile_reg[21][12]);
+    bool CheckForRotation(int tile_reg[21][12]);
 
     short GetX();
     short GetY();
