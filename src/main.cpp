@@ -35,7 +35,6 @@ int main(){
                     break;
             }
         }
-
         if(tile_drop_speed.getElapsedTime().asMilliseconds() >= 550)
         {
             tile_drop_speed.restart();
