@@ -14,7 +14,7 @@ Game::Game()
             tile_reg_display[i][j].setPosition(Vector2f(WINDOW_WIDTH / 4 + j * texture_size + texture_size, i * texture_size));
             tile_reg_display[i][j].setFillColor(Color::Transparent);
         }
-    current_tile = new No1(texture_size, tile_texture);
+    NewTile();
 
 }
 
@@ -26,7 +26,6 @@ Game::~Game()
 
 void Game::NewTile()
 {
-
     int value = rand() % 7 + 1;
     switch (value)
     {
