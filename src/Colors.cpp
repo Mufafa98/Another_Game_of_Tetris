@@ -9,6 +9,7 @@ const Color Colors::purple = Color(127, 0, 255);
 
 Color Colors::ReturnByIndex(int idx)
 {
+    idx++;
     switch (idx)
     {
         case 1 :

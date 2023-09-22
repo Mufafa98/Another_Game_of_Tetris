@@ -1,52 +1,48 @@
 #include "Tiles.hpp"
-//bug on move to far right > rotate > lower
 void Tiles::FitOnX()
 {
-    int pos_x = 0;
+    float end_of_game_screen = WINDOW_WIDTH / 4 + 14 * texture_size;
+    if(tile_type == 1)
+    {
+        if(possition.x > end_of_game_screen - 3 * texture_size)
+            possition.x = end_of_game_screen - 3 * texture_size;
+    }
     if(tile_type == 2)
     {
         if(state == 0)
-            pos_x = possition.x + 1 * texture_size;
+        {
+            if(possition.x > end_of_game_screen - 2 * texture_size)
+                possition.x = end_of_game_screen - 2 * texture_size;
+        }
         else
-            pos_x = possition.x + 4 * texture_size;
+        {
+            if(possition.x > end_of_game_screen - 5 * texture_size)
+            {
+                possition.x = end_of_game_screen - 5 * texture_size;
+                x_pos = 9;
+            }
+        }
     }
     else
     {
-        if(state % 2)
-            pos_x = possition.x + 3 * texture_size;
+        if(state % 2 == 0)
+        {
+            if(possition.x > end_of_game_screen - 3 * texture_size)
+                possition.x = end_of_game_screen - 3 * texture_size;
+        }
         else
-            pos_x = possition.x + 2 * texture_size;
+        {
+            if(possition.x > end_of_game_screen - 4 * texture_size)
+            {
+                possition.x = end_of_game_screen - 4 * texture_size;
+                x_pos = 10;
+            }
+        }
     }
-    if(pos_x > WINDOW_WIDTH / 4 + 13 * texture_size)
-        if(tile_type == 2)
-        {
-            if(state == 1)
-            {
-                possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 3 * texture_size;
-                x_pos -= ((pos_x - WINDOW_WIDTH / 4) / texture_size);
-            }
-        }
-        else
-        {
-            if(state % 2)
-            {
-                possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 2 * texture_size;
-                x_pos -= ((pos_x - WINDOW_WIDTH / 4) / texture_size);
-            }
-            else
-            {
-                possition.x = WINDOW_WIDTH / 4 + 12 * texture_size - 2 * texture_size;
-                x_pos -= ((pos_x - WINDOW_WIDTH / 4) / texture_size);
-            }
-        }
-    for(int i = 0; i < 4; i++)
-        for(int j = 0; j < 4; j++)
-            graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
 }
 //to do check on right and left
 bool Tiles::CheckUnder(int tile_reg[21][12])
 {
-    
     if(y_pos == 17)
         return false;
     switch (tile_type)
@@ -183,6 +179,24 @@ short Tiles::GetY()
     return y_pos;
 }
 
+short Tiles::GetMaxX()
+{
+    if(tile_type == 1)
+        return 11;
+    else if(tile_type == 2)
+    {
+        if(state == 0)
+            return 12;
+        return 9;
+    }
+    else
+    {
+        if(state % 2 == 0)
+            return 11;
+        return 10;
+    }
+}
+
 short Tiles::GetType()
 {
     return tile_type;
@@ -211,29 +225,10 @@ void Tiles::LowerTile()
 
 void Tiles::MoveRight()
 {
-    int pos_x = 0;
-    if(tile_type == 1)
-    {
-        pos_x = possition.x + 2 * texture_size;
-    }
-    else if(tile_type == 2)
-    {
-        if(state == 0)
-            pos_x = possition.x + 1 * texture_size;
-        else
-            pos_x = possition.x + 4 * texture_size;
-    }
-    else
-    {
-        if(state % 2)
-            pos_x = possition.x + 3 * texture_size;
-        else
-            pos_x = possition.x + 2 * texture_size;
-    }
-    if(pos_x > WINDOW_WIDTH / 4 + 12 * texture_size)
-        return;
-    x_pos++;
+    
     possition.x = possition.x + texture_size;
+    x_pos = std::min(x_pos + 1 , (int)GetMaxX());
+    this->FitOnX();
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
             graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
@@ -267,12 +262,6 @@ No1::No1(const float texture_size, const Texture texture)
     current_color = Colors::ReturnByIndex(color_idx);
     possition = Vector2f(WINDOW_WIDTH/4 + 6 * texture_size, -4 * texture_size);
     this->texture_size = texture_size;
-    bool temp[4][4] = {
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {1, 1, 0, 0},
-        {1, 1, 0, 0},
-        };
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
         {

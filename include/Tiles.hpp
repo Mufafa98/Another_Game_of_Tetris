@@ -165,6 +165,7 @@ public:
 
     short GetX();
     short GetY();
+    short GetMaxX();
     short GetType();
     short GetState();
     short GetColorIdx();
