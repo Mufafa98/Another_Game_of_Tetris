@@ -2,6 +2,7 @@
 
 Game::Game()
 {
+    score = 0;
     current_tile_type = 0;
     tile_texture.loadFromFile("../assets/tetris_tile_100_b90.png");
     background = new GameBackground(tile_texture, texture_size);
@@ -15,7 +16,14 @@ Game::Game()
             tile_reg_display[i][j].setFillColor(Color::Transparent);
         }
     NewTile();
-
+    text_font.loadFromFile("../assets/PixeloidMono-d94EV.ttf");
+    score_title.setString("Score:\n");
+    score_title.setCharacterSize(24);
+    score_title.setFont(text_font);
+    score_value.setString("000000000\n");
+    score_value.setCharacterSize(24);
+    score_value.setFont(text_font);
+    score_value.setPosition(Vector2f(score_title.getPosition().x, score_title.getPosition().y + 24));
 }
 Game::~Game()
 {
@@ -23,9 +31,74 @@ Game::~Game()
     delete current_tile;
 }
 
+short Game::CheckLinesClear()
+{
+    short result = 0;
+    for(int i = 0; i < size_tile_reg_height; i++)
+    {
+        bool clear_line = true;
+        for(int j = 0; j < size_tile_reg_width; j++)
+            if(tile_reg[i][j] == 0)
+                clear_line = false;
+        if(clear_line)
+        {
+            result += 1;
+            for(int j = 0; j < size_tile_reg_width; j++)
+            {
+                tile_reg[i][j] = 7;
+                tile_reg_display[i][j].setFillColor(Colors::ReturnByIndex(tile_reg[i][j]));
+            }
+        }
+    }
+    return result;
+}
+
+void Game::ClearLines()
+{
+    for(int i = 0; i < size_tile_reg_height; i++)
+    {
+        if(tile_reg[i][0] == 7)
+        {
+            for(int k = i; k > 0; k--)
+            {
+                for(int j = 0; j < size_tile_reg_width; j++)
+                {
+                    tile_reg[k][j] = tile_reg[k - 1][j];
+                    tile_reg_display[k][j].setFillColor(tile_reg_display[k - 1][j].getFillColor());
+                }
+            }
+        }
+    }
+}
+
+void Game::UpdateScore()
+{
+    std::string temp_score = std::to_string(score);
+    std::string last_score ="";
+    int control = 9;
+    while(control - temp_score.length() > 0)
+    {
+        last_score += "0";
+        control--;
+    }
+    last_score += temp_score;
+    score_value.setString(last_score);
+}
+
+void Game::Run()
+{
+    short no_of_lines = CheckLinesClear();
+    if(no_of_lines)
+    {
+        ClearLines();
+        score += 100 * std::pow(2, no_of_lines - 1);
+    }
+    UpdateScore();
+}
+
 void Game::NewTile()
 {
-    //current_tile = new No6(texture_size, tile_texture);return;
+    //current_tile = new No2(texture_size, tile_texture);return;
     int value = rand() % 7 + 1;
     switch (value)
     {
@@ -213,6 +286,8 @@ void Game::Draw(RenderWindow &window)
         }
     }
     current_tile->Draw(window);
+    window.draw(score_title);
+    window.draw(score_value);
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)
