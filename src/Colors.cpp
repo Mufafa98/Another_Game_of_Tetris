@@ -47,7 +47,6 @@ Color Colors::ReturnByIndex(int idx)
             return purple;
             break;
         }
-    
         default:
             return Color(255,255,255);
             break;

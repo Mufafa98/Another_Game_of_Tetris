@@ -40,6 +40,7 @@ int main(){
             tile_drop_speed.restart();
             game.LowerTile();
         }
+        game.Run();
         window.clear();
         game.Draw(window);
         window.display();

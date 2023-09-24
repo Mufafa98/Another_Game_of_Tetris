@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "SFML/Graphics.hpp"
 #include "Props.hpp"
 #include "Tiles.hpp"
@@ -25,9 +26,20 @@ private:
     Tiles* current_tile;
     Texture tile_texture;
     GameBackground *background;
+    Font text_font;
+    Text score_title;
+    unsigned int score;
+    Text score_value;
 public:
     Game();
     ~Game();
+
+    short CheckLinesClear();
+    void ClearLines();
+
+    void UpdateScore();
+
+    void Run();
 
     void NewTile();
     void RotateTile();
@@ -35,5 +47,6 @@ public:
     void MoveRight();
     void MoveLeft();
     void MoveToLowest();
+
     void Draw(RenderWindow& window);
 };
