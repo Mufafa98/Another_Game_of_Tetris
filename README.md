@@ -1,5 +1,4 @@
 # ***Another_Game_of_Tetris***
----
 ### **Why?**
 Because why not. It is a side project done alongside collage to practice **C++** and **SFML**
 ### **Platform?**
