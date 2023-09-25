@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <vector>
 #include "SFML/Graphics.hpp"
 #include "Props.hpp"
 #include "Colors.hpp"
@@ -175,6 +176,8 @@ public:
     void LowerTile();
     void MoveRight();
     void MoveLeft();
+
+    void DrawAt(RenderWindow& window, Vector2f at);
     void Draw(RenderWindow& window);
 };
 class No1 : public Tiles{

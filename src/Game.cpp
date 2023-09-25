@@ -13,9 +13,14 @@ Game::Game()
             tile_reg_display[i][j].setSize(Vector2f(texture_size, texture_size));
             tile_reg_display[i][j].setTexture(&tile_texture);
             tile_reg_display[i][j].setPosition(Vector2f(WINDOW_WIDTH / 4 + j * texture_size + texture_size, i * texture_size));
-            tile_reg_display[i][j].setFillColor(Color::Transparent);
+            tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
         }
-    NewTile();
+
+    current_tile = GenerateTile();
+    next_tiles[0] = GenerateTile();
+    next_tiles[1] = GenerateTile();
+    next_tiles[2] = GenerateTile();
+
     text_font.loadFromFile("../assets/PixeloidMono-d94EV.ttf");
     score_title.setString("Score:\n");
     score_title.setCharacterSize(24);
@@ -29,6 +34,7 @@ Game::~Game()
 {
     delete background;
     delete current_tile;
+    delete next_tiles[0];
 }
 
 short Game::CheckLinesClear()
@@ -94,39 +100,62 @@ void Game::Run()
         score += 100 * std::pow(2, no_of_lines - 1);
     }
     UpdateScore();
+    if(CheckLose())
+    {
+        printf("Ai pierdut\nscor:%d", score);
+        exit(1);
+    }
+}
+
+bool Game::CheckLose()
+{
+    bool result = false;
+    for(int i = 0; i < size_tile_reg_width; i++)
+        if(tile_reg[1][i])
+            result = true;
+    return result;
 }
 
 void Game::NewTile()
 {
-    //current_tile = new No2(texture_size, tile_texture);return;
+    current_tile = next_tiles[0];
+    next_tiles[0] = next_tiles[1];
+    next_tiles[1] = next_tiles[2];
+    next_tiles[2] = GenerateTile();
+}
+
+Tiles *Game::GenerateTile()
+{
     int value = rand() % 7 + 1;
+                                    //value = 2;
     switch (value)
     {
         case 1:
-            current_tile = new No1(texture_size, tile_texture);
+            return new No1(texture_size, tile_texture);
             break;
         case 2:
-            current_tile = new No2(texture_size, tile_texture);
+            return new No2(texture_size, tile_texture);
             break;
         case 3:
-            current_tile = new No3(texture_size, tile_texture);
+            return new No3(texture_size, tile_texture);
             break;
         case 4:
-            current_tile = new No4(texture_size, tile_texture);
+            return new No4(texture_size, tile_texture);
             break;
         case 5:
-            current_tile = new No5(texture_size, tile_texture);
+            return new No5(texture_size, tile_texture);
             break;
         case 6:
-            current_tile = new No6(texture_size, tile_texture);
+            return new No6(texture_size, tile_texture);
             break;
         case 7:
-            current_tile = new No7(texture_size, tile_texture);
+            return new No7(texture_size, tile_texture);
             break;
         
         default:
             break;
     }
+    return new No1(texture_size, tile_texture);
 }
 
 void Game::RotateTile()
@@ -168,6 +197,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -179,6 +210,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -190,6 +223,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -201,6 +236,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -212,6 +249,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -224,6 +263,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -235,6 +276,8 @@ void Game::LowerTile()
                             Color tile_color = Colors::ReturnByIndex(color_idx);
                             tile_color.a = tile_reg[i][j] * 255;
                             tile_reg_display[i][j].setFillColor(tile_color);
+                            if(tile_reg[i][j] == 0)
+                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -288,6 +331,10 @@ void Game::Draw(RenderWindow &window)
     current_tile->Draw(window);
     window.draw(score_title);
     window.draw(score_value);
+    for(int i = 0; i < 3; i++)
+    {
+        next_tiles[i]->DrawAt(window,Vector2f(next_tile_pos.x, next_tile_pos.y + 6 * i * texture_size));
+    }
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)
