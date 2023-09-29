@@ -2,6 +2,8 @@
 
 Game::Game()
 {
+    running = true;
+    tile_drop_speed = 550;
     score = 0;
     current_tile_type = 0;
     tile_texture.loadFromFile("../assets/tetris_tile_100_b90.png");
@@ -16,6 +18,7 @@ Game::Game()
             tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
         }
 
+
     current_tile = GenerateTile();
     next_tiles[0] = GenerateTile();
     next_tiles[1] = GenerateTile();
@@ -29,12 +32,18 @@ Game::Game()
     score_value.setCharacterSize(24);
     score_value.setFont(text_font);
     score_value.setPosition(Vector2f(score_title.getPosition().x, score_title.getPosition().y + 24));
+
+    
+    
 }
 Game::~Game()
 {
     delete background;
     delete current_tile;
     delete next_tiles[0];
+    delete next_tiles[1];
+    delete next_tiles[2];
+    delete dialog_box;
 }
 
 short Game::CheckLinesClear()
@@ -91,8 +100,23 @@ void Game::UpdateScore()
     score_value.setString(last_score);
 }
 
-void Game::Run()
+void Game::Run(Time timer)
 {
+    if(!running)
+        return;
+
+        
+    if(timer.asMilliseconds() >= tile_drop_speed)
+    {
+        
+        LowerTile();
+        need_restart = true;
+    }
+    else
+        need_restart = false;
+     
+    tile_drop_speed = 550;
+
     short no_of_lines = CheckLinesClear();
     if(no_of_lines)
     {
@@ -102,8 +126,7 @@ void Game::Run()
     UpdateScore();
     if(CheckLose())
     {
-        printf("Ai pierdut\nscor:%d", score);
-        exit(1);
+        running = false;
     }
 }
 
@@ -113,7 +136,51 @@ bool Game::CheckLose()
     for(int i = 0; i < size_tile_reg_width; i++)
         if(tile_reg[1][i])
             result = true;
+    if(result)
+        dialog_box = new LoseScreen(text_font, texture_size, score_value.getString());
     return result;
+}
+
+bool Game::TimerNeedRestart()
+{
+    return need_restart;
+}
+
+void Game::ModifyTileSpeed(int value)
+{
+    tile_drop_speed = value; 
+}
+
+void Game::ResetGame()
+{
+    running = true;
+    tile_drop_speed = 550;
+    score = 0;
+    current_tile_type = 0;
+    for(int i = 0; i < size_tile_reg_height; i++)
+        for(int j = 0; j< size_tile_reg_width; j++)
+        {
+            tile_reg[i][j] = 0;
+            tile_reg_display[i][j].setSize(Vector2f(texture_size, texture_size));
+            tile_reg_display[i][j].setTexture(&tile_texture);
+            tile_reg_display[i][j].setPosition(Vector2f(WINDOW_WIDTH / 4 + j * texture_size + texture_size, i * texture_size));
+            tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+        }
+
+
+    current_tile = GenerateTile();
+    next_tiles[0] = GenerateTile();
+    next_tiles[1] = GenerateTile();
+    next_tiles[2] = GenerateTile();
+
+    score_title.setString("Score:\n");
+    score_title.setCharacterSize(24);
+    score_title.setFont(text_font);
+    score_value.setString("000000000\n");
+    score_value.setCharacterSize(24);
+    score_value.setFont(text_font);
+    score_value.setPosition(Vector2f(score_title.getPosition().x, score_title.getPosition().y + 24));
+
 }
 
 void Game::NewTile()
@@ -193,12 +260,12 @@ void Game::LowerTile()
                     {
                         if(no1[temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -206,12 +273,12 @@ void Game::LowerTile()
                     {
                         if(no2[tile_state][temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -219,12 +286,12 @@ void Game::LowerTile()
                     {
                         if(no3[tile_state][temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -232,12 +299,12 @@ void Game::LowerTile()
                     {
                         if(no4[tile_state][temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -245,12 +312,12 @@ void Game::LowerTile()
                     {
                         if(no5[tile_state][temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -259,12 +326,12 @@ void Game::LowerTile()
                         
                         if(no6[tile_state][temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -272,12 +339,12 @@ void Game::LowerTile()
                     {
                         if(no7[tile_state][temp_i][temp_j])
                         {
-                            tile_reg[i][j] = 1;
+                            tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] = 1;
                             Color tile_color = Colors::ReturnByIndex(color_idx);
-                            tile_color.a = tile_reg[i][j] * 255;
-                            tile_reg_display[i][j].setFillColor(tile_color);
-                            if(tile_reg[i][j] == 0)
-                                tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
+                            tile_color.a = tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] * 255;
+                            tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(tile_color);
+                            if(tile_reg[std::max((int)i, 0)][std::max((int)j, 0)] == 0)
+                                tile_reg_display[std::max((int)i, 0)][std::max((int)j, 0)].setFillColor(Color(122,122,122,122));
                         }
                         break;
                     }
@@ -312,6 +379,7 @@ void Game::MoveLeft()
 
 void Game::MoveToLowest()
 {
+    score += 10;
     while(current_tile->CheckUnder(tile_reg))
     {
         this->LowerTile();
@@ -335,6 +403,8 @@ void Game::Draw(RenderWindow &window)
     {
         next_tiles[i]->DrawAt(window,Vector2f(next_tile_pos.x, next_tile_pos.y + 6 * i * texture_size));
     }
+    if(!running)
+        dialog_box->Draw(window);
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)
@@ -369,4 +439,36 @@ void GameBackground::Draw(RenderWindow &window)
     {
         window.draw(border[i]);
     }
+}
+
+LoseScreen::LoseScreen(Font& font, float texture_size, std::string score)
+{
+    score_text.setString("Score");
+    score_text.setCharacterSize(22);
+    score_text.setFont(font);
+    score_text.setPosition(Vector2f(WINDOW_WIDTH / 2 - score_text.getLocalBounds().getSize().x/2, 9 * texture_size));
+
+    score_value.setString(score);
+    score_value.setCharacterSize(22);
+    score_value.setFont(font);
+    score_value.setPosition(Vector2f(WINDOW_WIDTH / 2 - score_value.getLocalBounds().getSize().x/2, 10 * texture_size));
+    
+    actions.setString("Exit[Q] Save Score[S] Retry[R]");
+    actions.setCharacterSize(22);
+    actions.setFont(font);
+    actions.setPosition(Vector2f(WINDOW_WIDTH / 2 - actions.getLocalBounds().getSize().x/2, 12 * texture_size));
+    
+
+    lose_screen_texture.loadFromFile("../assets/lose_screen.png");
+    lose_screen.setSize(Vector2f(14 * texture_size, 6 * texture_size));
+    lose_screen.setPosition(Vector2f(WINDOW_WIDTH / 4, 8 * texture_size));
+    lose_screen.setTexture(&lose_screen_texture);
+}
+
+void LoseScreen::Draw(RenderWindow &window)
+{
+    window.draw(lose_screen);
+    window.draw(score_text);
+    window.draw(score_value);
+    window.draw(actions);
 }

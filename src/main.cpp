@@ -21,26 +21,29 @@ int main(){
                 }
                 case Event::KeyPressed:
                 {
-                    if(Keyboard::isKeyPressed(Keyboard::Right))
+                    if(Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
                         game.MoveRight();
-                    else if(Keyboard::isKeyPressed(Keyboard::Left))
+                    else if(Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
                         game.MoveLeft();
                     else if(Keyboard::isKeyPressed(Keyboard::Space))
                         game.RotateTile();
-                    else if(Keyboard::isKeyPressed(Keyboard::Down))
+                    else if(Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+                        game.ModifyTileSpeed(70);
+                    else if(Keyboard::isKeyPressed(Keyboard::Enter))
                         game.MoveToLowest();
+                    else if(game.CheckLose() && Keyboard::isKeyPressed(Keyboard::Q))
+                        window.close();
+                    else if(game.CheckLose() && Keyboard::isKeyPressed(Keyboard::R))
+                        game.ResetGame();
                     break;
                 }
                 default:
                     break;
             }
         }
-        if(tile_drop_speed.getElapsedTime().asMilliseconds() >= 550)
-        {
+        if(game.TimerNeedRestart())
             tile_drop_speed.restart();
-            game.LowerTile();
-        }
-        game.Run();
+        game.Run(tile_drop_speed.getElapsedTime());
         window.clear();
         game.Draw(window);
         window.display();
