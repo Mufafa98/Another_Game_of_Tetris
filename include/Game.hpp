@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
+#include <cstring>
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <fstream>
 #include "SFML/Graphics.hpp"
 #include "Props.hpp"
 #include "Tiles.hpp"
@@ -25,34 +27,48 @@ private:
     RectangleShape lose_screen;
     Texture lose_screen_texture;
 public:
-    LoseScreen(Font& font, float texture_size, std::string score);
+    LoseScreen(const Font& font, const float texture_size, const std::string score);
+    void UpdateActionsText(const std::string str);
     void Draw(RenderWindow& window);
 };
-
+class Textbox{
+private:
+    bool last_parity;
+    std::string nickname_string;
+    Text nickname;
+public:
+    Textbox(const Font& font, const float texture_size);
+    std::string GetNickname();
+    void AddToNickname(const char c, const float texture_size);
+    void RemFromNickname(const float texture_size);
+    void Animate(const Time text_box_parity);
+    void Draw(RenderWindow& window);
+};
 class Game{
 private:
+    bool saved;
     bool running;
+    bool paused;
     bool need_restart;
+    bool need_save;
+    bool tile_reg[size_tile_reg_height][size_tile_reg_width];
+    short tile_drop_speed;
+    short current_tile_type;
+    unsigned int score;
     const float texture_size = (float)WINDOW_HEIGHT / 22;
-    //                             Vector2f((float)WINDOW_WIDTH / 4 + 14 * (float)WINDOW_HEIGHT / 22 + ((float)WINDOW_WIDTH - ((float)WINDOW_WIDTH / 4 + 14 * (float)WINDOW_HEIGHT / 22)) / 2 - 1 * (float)WINDOW_HEIGHT / 22, 0);
     const Vector2f next_tile_pos = Vector2f(75 * (float)WINDOW_WIDTH / 88, 3 * (float)WINDOW_HEIGHT / 22);
-    static const int size_tile_reg_height = 21;
-    static const int size_tile_reg_width = 12;
-    int tile_drop_speed;
-    int tile_reg[size_tile_reg_height][size_tile_reg_width];
-    RectangleShape tile_reg_display[size_tile_reg_height][size_tile_reg_width];
-    
-    LoseScreen *dialog_box;
-    
-    int current_tile_type;
     Tiles* current_tile;
     Tiles* next_tiles[3];
-    Texture tile_texture;
     GameBackground *background;
-    Font text_font;
+    LoseScreen *dialog_box;
+    Textbox *nickname;
+    RectangleShape tile_reg_display[size_tile_reg_height][size_tile_reg_width];
     Text score_title;
-    unsigned int score;
     Text score_value;
+    Text pause_text;
+    Texture tile_texture;
+    Font text_font;
+    
 public:
     Game();
     ~Game();
@@ -62,11 +78,18 @@ public:
 
     void UpdateScore();
 
-    void Run(Time timer);
+    void Run(const Time timer);
     bool CheckLose();
     bool TimerNeedRestart();
-    void ModifyTileSpeed(int value);
+    void ModifyTileSpeed(const int value);
     void ResetGame();
+    void PauseGame();
+    void InputNickname();
+    bool CheckInputNickname();
+    void AddToNickname(const char c);
+    void RemFromNickname();
+    void SaveScore();
+    bool HasScoreBeenSaved();
 
     void NewTile();
     Tiles* GenerateTile();
@@ -77,4 +100,5 @@ public:
     void MoveToLowest();
 
     void Draw(RenderWindow& window);
+    void Animate(const Time text_box_parity);
 };

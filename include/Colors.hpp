@@ -11,6 +11,6 @@ class Colors{
     static const Color blue;
     static const Color purple;
 public:
-    static Color ReturnByIndex(int idx);
+    static Color ReturnByIndex(const int idx);
 };
 
