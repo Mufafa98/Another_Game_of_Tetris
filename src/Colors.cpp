@@ -7,10 +7,9 @@ const Color Colors::orange = Color(255, 128, 0);
 const Color Colors::blue = Color(0, 0, 255);
 const Color Colors::purple = Color(127, 0, 255);
 
-Color Colors::ReturnByIndex(int idx)
+Color Colors::ReturnByIndex(const int idx)
 {
-    idx++;
-    switch (idx)
+    switch (idx + 1)
     {
         case 1 :
         {   

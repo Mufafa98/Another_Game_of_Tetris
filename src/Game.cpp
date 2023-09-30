@@ -2,7 +2,11 @@
 
 Game::Game()
 {
+
+    saved = false;
+    paused = false;
     running = true;
+    need_save = false;
     tile_drop_speed = 550;
     score = 0;
     current_tile_type = 0;
@@ -33,7 +37,11 @@ Game::Game()
     score_value.setFont(text_font);
     score_value.setPosition(Vector2f(score_title.getPosition().x, score_title.getPosition().y + 24));
 
-    
+    pause_text.setString("PAUSE");
+    pause_text.setCharacterSize(28);
+    pause_text.setFont(text_font);
+    pause_text.setPosition(Vector2f(WINDOW_WIDTH / 2 - pause_text.getLocalBounds().getSize().x / 2, 10 * texture_size));
+
     
 }
 Game::~Game()
@@ -44,6 +52,7 @@ Game::~Game()
     delete next_tiles[1];
     delete next_tiles[2];
     delete dialog_box;
+    delete nickname;
 }
 
 short Game::CheckLinesClear()
@@ -100,21 +109,25 @@ void Game::UpdateScore()
     score_value.setString(last_score);
 }
 
-void Game::Run(Time timer)
+void Game::Run(const Time timer)
 {
-    if(!running)
+    if(!running || paused)
+    {
+        if(CheckInputNickname())
+            dialog_box->UpdateActionsText(std::string("Exit[Q]  Save[ENTER]  Retry[R]"));
+        if(saved)
+            dialog_box->UpdateActionsText(std::string("Exit[Q]     Saved     Retry[R]"));
         return;
+    }
 
         
     if(timer.asMilliseconds() >= tile_drop_speed)
     {
-        
         LowerTile();
         need_restart = true;
     }
     else
         need_restart = false;
-     
     tile_drop_speed = 550;
 
     short no_of_lines = CheckLinesClear();
@@ -128,6 +141,7 @@ void Game::Run(Time timer)
     {
         running = false;
     }
+    
 }
 
 bool Game::CheckLose()
@@ -146,7 +160,7 @@ bool Game::TimerNeedRestart()
     return need_restart;
 }
 
-void Game::ModifyTileSpeed(int value)
+void Game::ModifyTileSpeed(const int value)
 {
     tile_drop_speed = value; 
 }
@@ -183,6 +197,58 @@ void Game::ResetGame()
 
 }
 
+void Game::PauseGame()
+{
+    paused = !paused;
+}
+
+void Game::InputNickname()
+{
+    nickname = new Textbox(text_font, texture_size);
+    need_save = true;
+
+}
+
+bool Game::CheckInputNickname()
+{
+    return need_save;
+}
+
+void Game::AddToNickname(const char c)
+{
+    nickname->AddToNickname(c, texture_size);
+}
+
+void Game::RemFromNickname()
+{
+    nickname->RemFromNickname(texture_size);
+}
+
+void Game::SaveScore()
+{
+    struct stat{
+        char name[50];
+        unsigned int score;
+    };
+    stat output;
+    output.score = score;
+    std::FILE* leaderboard = fopen("../data/LeaderBoard.log", "a+");
+    std::string nick = nickname->GetNickname();
+    //vezi ce faci cu animatia
+    while(nick.length() < 50)
+        nick += ' ';
+    std::strncpy(output.name, nick.c_str(), 50 >nick.length() ? nick.length() : 50);
+    fwrite(&output, sizeof(stat), 1, leaderboard);
+    fclose(leaderboard);
+    need_save = false;
+    saved = true;
+}
+
+bool Game::HasScoreBeenSaved()
+{
+    return saved;
+}
+
 void Game::NewTile()
 {
     current_tile = next_tiles[0];
@@ -194,7 +260,7 @@ void Game::NewTile()
 Tiles *Game::GenerateTile()
 {
     int value = rand() % 7 + 1;
-                                    //value = 2;
+                                    //value = 7;
     switch (value)
     {
         case 1:
@@ -227,12 +293,16 @@ Tiles *Game::GenerateTile()
 
 void Game::RotateTile()
 {
+    if(!running || paused)
+        return;
     if (current_tile->CheckForRotation(tile_reg))
         current_tile->Rotate();
 }
 
 void Game::LowerTile()
 {
+    if(!running || paused)
+        return;
     if(current_tile->CheckUnder(tile_reg))
         current_tile->LowerTile();
     else
@@ -367,23 +437,35 @@ void Game::LowerTile()
 
 void Game::MoveRight()
 {
+    if(!running || paused)
+        return;
     if(current_tile->CheckRight(tile_reg))
         current_tile->MoveRight();
 }
 
 void Game::MoveLeft()
 {
+    if(!running || paused)
+        return;
     if(current_tile->CheckLeft(tile_reg))
         current_tile->MoveLeft();
 }
 
 void Game::MoveToLowest()
 {
+    if(!running || paused)
+        return;
     score += 10;
     while(current_tile->CheckUnder(tile_reg))
     {
         this->LowerTile();
     }
+}
+
+void Game::Animate(const Time text_box_parity)
+{
+    if(need_save)
+        nickname->Animate(text_box_parity);
 }
 
 void Game::Draw(RenderWindow &window)
@@ -405,6 +487,12 @@ void Game::Draw(RenderWindow &window)
     }
     if(!running)
         dialog_box->Draw(window);
+    if(paused)
+        window.draw(pause_text);
+    if(need_save)
+        nickname->Draw(window);
+
+
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)
@@ -441,7 +529,7 @@ void GameBackground::Draw(RenderWindow &window)
     }
 }
 
-LoseScreen::LoseScreen(Font& font, float texture_size, std::string score)
+LoseScreen::LoseScreen(const Font& font, const float texture_size, const std::string score)
 {
     score_text.setString("Score");
     score_text.setCharacterSize(22);
@@ -465,10 +553,82 @@ LoseScreen::LoseScreen(Font& font, float texture_size, std::string score)
     lose_screen.setTexture(&lose_screen_texture);
 }
 
+void LoseScreen::UpdateActionsText(const std::string str)
+{
+    actions.setString(str);
+}
+
 void LoseScreen::Draw(RenderWindow &window)
 {
     window.draw(lose_screen);
     window.draw(score_text);
     window.draw(score_value);
     window.draw(actions);
+}
+
+Textbox::Textbox(const Font &font, const float texture_size)
+{
+    last_parity = 0;
+    nickname_string = "_";
+    nickname.setString(nickname_string);
+    nickname.setCharacterSize(22);
+    nickname.setFont(font);
+    nickname.setPosition(Vector2f(WINDOW_WIDTH / 2 - nickname.getLocalBounds().getSize().x/2, 11 * texture_size));
+
+}
+
+std::string Textbox::GetNickname()
+{
+    return nickname_string;
+}
+
+void Textbox::AddToNickname(const char c, const float texture_size)
+{
+    if(nickname_string.length() >= 50)
+        return;
+    if(last_parity == 1)
+        nickname_string.push_back(c);
+    else
+    {
+        nickname_string.pop_back();
+        nickname_string.push_back(c);
+        nickname_string.push_back('_');
+    }
+    nickname.setString(nickname_string);
+    nickname.setPosition(Vector2f(WINDOW_WIDTH / 2 - nickname.getLocalBounds().getSize().x/2, 11 * texture_size));
+}
+
+void Textbox::RemFromNickname(const float texture_size)
+{
+    if(nickname_string.length() <= 1)
+        return;
+    if(last_parity == 1)
+        nickname_string.pop_back();
+    else
+    {
+        nickname_string.pop_back();
+        nickname_string.pop_back();
+        nickname_string.push_back('_');
+    }
+    nickname.setString(nickname_string);
+    nickname.setPosition(Vector2f(WINDOW_WIDTH / 2 - nickname.getLocalBounds().getSize().x/2, 11 * texture_size));
+}
+
+void Textbox::Animate(const Time text_box_parity)
+{
+    int time_value = int(text_box_parity.asSeconds());
+    if(time_value % 2 != last_parity)
+    {
+        if(time_value % 2 == 1)
+            nickname_string.pop_back();
+        else if(time_value % 2 == 0)
+            nickname_string.push_back('_');
+    }
+    nickname.setString(nickname_string);
+    last_parity = time_value % 2;
+}
+
+void Textbox::Draw(RenderWindow &window)
+{
+    window.draw(nickname);
 }

@@ -1,5 +1,4 @@
 #include "Tiles.hpp"
-//check if fit on X is necessary
 void Tiles::FitOnX()
 {
     float end_of_game_screen = WINDOW_WIDTH / 4 + 14 * texture_size;
@@ -41,7 +40,7 @@ void Tiles::FitOnX()
         }
     }
 }
-bool Tiles::CheckUnder(int tile_reg[21][12])
+bool Tiles::CheckUnder(const bool tile_reg[21][12])
 {
     if(y_pos == 17)
         return false;
@@ -105,6 +104,7 @@ bool Tiles::CheckUnder(int tile_reg[21][12])
         {
             if(state == 0)
             {
+                //de ce max?
                 return !(tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos - 1]);
 
             }else if(state == 1){
@@ -130,7 +130,7 @@ bool Tiles::CheckUnder(int tile_reg[21][12])
     return true;
 }
 
-bool Tiles::CheckLeft(int tile_reg[21][12])
+bool Tiles::CheckLeft(const bool tile_reg[21][12])
 {
     switch (tile_type)
     {
@@ -223,7 +223,7 @@ bool Tiles::CheckLeft(int tile_reg[21][12])
     return true;
 }
 
-bool Tiles::CheckRight(int tile_reg[21][12])
+bool Tiles::CheckRight(const bool tile_reg[21][12])
 {
     switch (tile_type)
     {
@@ -305,7 +305,7 @@ bool Tiles::CheckRight(int tile_reg[21][12])
                 case 0:
                     return !(tile_reg[std::max((int)y_pos + 3, 0)][x_pos] || tile_reg[std::max((int)y_pos + 2, 0)][x_pos + 1] || tile_reg[std::max((int)y_pos + 1, 0)][x_pos + 1]);
                 case 1:
-                    return !(tile_reg[std::max((int)y_pos + 2, 0)][x_pos + 2] || tile_reg[std::max((int)y_pos + 3, 0)][x_pos + 1]);
+                    return !(tile_reg[std::max((int)y_pos + 2, 0)][x_pos + 1] || tile_reg[std::max((int)y_pos + 3, 0)][x_pos + 2]);
                 default:
                 break;
             }
@@ -316,7 +316,7 @@ bool Tiles::CheckRight(int tile_reg[21][12])
     return true;
 }
 
-bool Tiles::CheckForRotation(int tile_reg[21][12])
+bool Tiles::CheckForRotation(const bool tile_reg[21][12])
 {
     switch (tile_type)
     {
@@ -493,7 +493,7 @@ void Tiles::MoveLeft()
 
 }
 
-void Tiles::DrawAt(RenderWindow &window, Vector2f at)
+void Tiles::DrawAt(RenderWindow &window, const Vector2f at)
 {
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)

@@ -161,10 +161,10 @@ protected:
 public:
     virtual void Rotate() = 0;
     void FitOnX();
-    bool CheckUnder(int tile_reg[21][12]);
-    bool CheckLeft(int tile_reg[21][12]);
-    bool CheckRight(int tile_reg[21][12]);
-    bool CheckForRotation(int tile_reg[21][12]);
+    bool CheckUnder(const bool tile_reg[21][12]);
+    bool CheckLeft(const bool tile_reg[21][12]);
+    bool CheckRight(const bool tile_reg[21][12]);
+    bool CheckForRotation(const bool tile_reg[21][12]);
 
     short GetX();
     short GetY();
@@ -177,7 +177,7 @@ public:
     void MoveRight();
     void MoveLeft();
 
-    void DrawAt(RenderWindow& window, Vector2f at);
+    void DrawAt(RenderWindow& window,const Vector2f at);
     void Draw(RenderWindow& window);
 };
 class No1 : public Tiles{
