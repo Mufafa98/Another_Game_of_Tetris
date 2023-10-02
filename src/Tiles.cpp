@@ -48,27 +48,27 @@ bool Tiles::CheckUnder(const short tile_reg[21][12])
     {
         case 1:
         {
-            return !(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos - 1]);
+            return !(tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 4, 0)][x_pos - 1]);
             break;
         }
         case 2:
         {
             if(state == 0)
-                return !(tile_reg[y_pos + 4][x_pos - 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1]);
             else
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1] || tile_reg[y_pos + 4][x_pos + 2]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 4, 0)][x_pos + 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos + 2]);
         }
         case 3:
         {
             if(state == 0)
             {
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 3][x_pos]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos]);
             }else if(state == 1){
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 4, 0)][x_pos + 1]);
             }else if(state == 2){
-                return !(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos - 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos - 1]);
             }else{
-                return !(tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos + 1]);
+                return !(tile_reg[std::max(y_pos + 3, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
             }
             break;
         }
@@ -76,13 +76,13 @@ bool Tiles::CheckUnder(const short tile_reg[21][12])
         {
             if(state == 0)
             {
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos]);
             }else if(state == 1){
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 4, 0)][x_pos + 1]);
             }else if(state == 2){
-                return !(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 2][x_pos - 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 2, 0)][x_pos - 1]);
             }else{
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 3][x_pos] || tile_reg[y_pos + 3][x_pos + 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
             }
             break;
         }
@@ -90,13 +90,13 @@ bool Tiles::CheckUnder(const short tile_reg[21][12])
         {
             if(state == 0)
             {
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos]);
             }else if(state == 1){
-                return !(tile_reg[y_pos + 4][x_pos + 1] || tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 3][x_pos]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos + 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos]);
             }else if(state == 2){
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 2][x_pos]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos]);
             }else{
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 4, 0)][x_pos + 1]);
             }
             break;
         }
@@ -104,11 +104,10 @@ bool Tiles::CheckUnder(const short tile_reg[21][12])
         {
             if(state == 0)
             {
-                //de ce max?
                 return !(tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos - 1]);
 
             }else if(state == 1){
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 3][x_pos + 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
             }
             break;
         }
@@ -116,9 +115,9 @@ bool Tiles::CheckUnder(const short tile_reg[21][12])
         {
             if(state == 0)
             {
-                return !(tile_reg[y_pos + 4][x_pos - 1] || tile_reg[y_pos + 3][x_pos]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos]);
             }else if(state == 1){
-                return !(tile_reg[y_pos + 4][x_pos] || tile_reg[y_pos + 4][x_pos + 1] || tile_reg[y_pos + 3][x_pos - 1]);
+                return !(tile_reg[std::max(y_pos + 4, 0)][x_pos] || tile_reg[std::max(y_pos + 4, 0)][x_pos + 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos - 1]);
             }
             break;
         }
@@ -129,7 +128,6 @@ bool Tiles::CheckUnder(const short tile_reg[21][12])
 
     return true;
 }
-
 bool Tiles::CheckLeft(const short tile_reg[21][12])
 {
     switch (tile_type)
@@ -222,7 +220,6 @@ bool Tiles::CheckLeft(const short tile_reg[21][12])
     }
     return true;
 }
-
 bool Tiles::CheckRight(const short tile_reg[21][12])
 {
     switch (tile_type)
@@ -315,7 +312,6 @@ bool Tiles::CheckRight(const short tile_reg[21][12])
     }
     return true;
 }
-
 bool Tiles::CheckForRotation(const short tile_reg[21][12])
 {
     switch (tile_type)
@@ -326,9 +322,9 @@ bool Tiles::CheckForRotation(const short tile_reg[21][12])
             switch (state)
             {
                 case 0:
-                    return !(tile_reg[y_pos + 3][x_pos] || tile_reg[y_pos + 3][x_pos + 1] || tile_reg[y_pos + 3][x_pos + 2]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 2]);
                 case 1:
-                    return !(tile_reg[y_pos][x_pos - 1] || tile_reg[y_pos + 1][x_pos - 1] || tile_reg[y_pos + 2][x_pos - 1]);
+                    return !(tile_reg[std::max(y_pos + 0, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 1, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos - 1]);
                 default:
                     break;
             }
@@ -337,16 +333,16 @@ bool Tiles::CheckForRotation(const short tile_reg[21][12])
             switch (state)
             {
                 case 0:
-                    return !(tile_reg[y_pos + 3][x_pos] || tile_reg[y_pos + 3][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
                     break;
                 case 1:
-                    return !(tile_reg[y_pos + 1][x_pos] || tile_reg[y_pos + 2][x_pos - 1]);
+                    return !(tile_reg[std::max(y_pos + 1, 0)][x_pos] || tile_reg[std::max(y_pos + 2, 0)][x_pos - 1]);
                     break;
                 case 2:
-                    return !(tile_reg[y_pos + 2][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 2, 0)][x_pos + 1]);
                     break;
                 case 3:
-                    return !(tile_reg[y_pos +1][x_pos - 1]);
+                    return !(tile_reg[std::max(y_pos + 1, 0)][x_pos - 1]);
                     break;
                 default:
                     break;
@@ -356,13 +352,13 @@ bool Tiles::CheckForRotation(const short tile_reg[21][12])
             switch(state)
             {
                 case 0:
-                    return !(tile_reg[y_pos + 3][x_pos + 1] || tile_reg[y_pos + 2][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos + 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos + 1]);
                 case 1:
-                    return !(tile_reg[y_pos + 2][x_pos] || tile_reg[y_pos + 1][x_pos] || tile_reg[y_pos + 1][x_pos - 1]);
+                    return !(tile_reg[std::max(y_pos + 2, 0)][x_pos] || tile_reg[std::max(y_pos + 1, 0)][x_pos] || tile_reg[std::max(y_pos + 1, 0)][x_pos - 1]);
                 case 2:
-                    return !(tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 2][x_pos - 1] || tile_reg[y_pos + 2][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos + 1]);
                 case 3:
-                    return !(tile_reg[y_pos + 1][x_pos - 1] || tile_reg[y_pos + 3][x_pos]);
+                    return !(tile_reg[std::max(y_pos + 1, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos]);
                 default:
                     break;
             }
@@ -371,13 +367,13 @@ bool Tiles::CheckForRotation(const short tile_reg[21][12])
             switch (state)
             {
                 case 0:
-                    return !(tile_reg[y_pos + 2][x_pos - 1] || tile_reg[y_pos + 2][x_pos + 1] || tile_reg[y_pos + 3][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 2, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos + 1] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
                 case 1:
-                    return !(tile_reg[y_pos + 1][x_pos - 1] || tile_reg[y_pos + 1][x_pos] || tile_reg[y_pos + 3][x_pos - 1]);
+                    return !(tile_reg[std::max(y_pos + 1, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 1, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos - 1]);
                 case 2:
-                    return !(tile_reg[y_pos + 3][x_pos] || tile_reg[y_pos + 3][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
                 case 3:
-                    return !(tile_reg[y_pos + 2][x_pos] || tile_reg[y_pos + 1][x_pos]);
+                    return !(tile_reg[std::max(y_pos + 2, 0)][x_pos] || tile_reg[std::max(y_pos + 1, 0)][x_pos]);
                 
                 default:
                     break;
@@ -387,10 +383,10 @@ bool Tiles::CheckForRotation(const short tile_reg[21][12])
             switch(state)
             {
                 case 0:
-                    return !(tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 2][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos + 1]);
                     break;
                 case 1:
-                    return !(tile_reg[y_pos + 1][x_pos - 1] || tile_reg[y_pos + 2][x_pos - 1]);
+                    return !(tile_reg[std::max(y_pos + 1, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 2, 0)][x_pos - 1]);
                     break;
                 default:
                     break;
@@ -400,10 +396,10 @@ bool Tiles::CheckForRotation(const short tile_reg[21][12])
             switch(state)
             {
                 case 0:
-                    return !(tile_reg[y_pos + 3][x_pos] || tile_reg[y_pos + 3][x_pos + 1]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos] || tile_reg[std::max(y_pos + 3, 0)][x_pos + 1]);
                     break;
                 case 1:
-                    return !(tile_reg[y_pos + 3][x_pos - 1] || tile_reg[y_pos + 1][x_pos]);
+                    return !(tile_reg[std::max(y_pos + 3, 0)][x_pos - 1] || tile_reg[std::max(y_pos + 1, 0)][x_pos]);
                     break;
                 default:
                     break;
@@ -419,12 +415,10 @@ short Tiles::GetX()
 {
     return x_pos;
 }
-
 short Tiles::GetY()
 {
     return y_pos;
 }
-
 short Tiles::GetMaxX()
 {
     if(tile_type == 1)
@@ -442,17 +436,14 @@ short Tiles::GetMaxX()
         return 10;
     }
 }
-
 short Tiles::GetType()
 {
     return tile_type;
 }
-
 short Tiles::GetState()
 {
     return state;
 }
-
 short Tiles::GetColorIdx()
 {
     return color_idx;
@@ -468,7 +459,6 @@ void Tiles::LowerTile()
         for(int j = 0; j < 4; j++)
             graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
 }
-
 void Tiles::MoveRight()
 {
     
@@ -480,7 +470,6 @@ void Tiles::MoveRight()
             graphical_shape[i][j].setPosition(Vector2f(possition.x + j * texture_size, possition.y + i * texture_size));
 
 }
-
 void Tiles::MoveLeft()
 {
     if(possition.x < WINDOW_WIDTH / 4 + texture_size)
@@ -504,14 +493,13 @@ void Tiles::DrawAt(RenderWindow &window, const Vector2f at)
             graphical_shape[i][j].setPosition(last_pos);
         }
 }
-
 void Tiles::Draw(RenderWindow &window)
 {
     for(int i = 0; i < 4; i++)
         for(int j = 0; j < 4; j++)
             window.draw(graphical_shape[i][j]);
 }
-//fix color picking performance
+
 No1::No1(const float texture_size, const Texture texture)
 {
     tile_type = 1;

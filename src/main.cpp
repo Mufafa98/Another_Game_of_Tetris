@@ -166,9 +166,7 @@ int main(){
         game.Run(tile_drop_speed.getElapsedTime());
 
         window.clear();
-
         game.Draw(window);
-
         window.display();
     }
     return 0;
