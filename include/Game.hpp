@@ -70,11 +70,9 @@ class Game{
 private:
     bool saved;
     bool need_restart;
-    
     short game_state;
     short tile_reg[size_tile_reg_height][size_tile_reg_width];
     short tile_drop_speed;
-    short current_tile_type;
     unsigned int score;
     const float texture_size = (float)WINDOW_HEIGHT / 22;
     const Vector2f next_tile_pos = Vector2f(75 * (float)WINDOW_WIDTH / 88, 3 * (float)WINDOW_HEIGHT / 22);

@@ -6,7 +6,6 @@ Game::Game()
     saved = false;
     tile_drop_speed = 550;
     score = 0;
-    current_tile_type = 0;
     tile_texture.loadFromFile("../assets/tetris_tile_100_b90.png");
     background = new GameBackground(tile_texture, texture_size);
     for(int i = 0; i < size_tile_reg_height; i++)
@@ -66,10 +65,7 @@ short Game::CheckLinesClear()
         {
             result += 1;
             for(int j = 0; j < size_tile_reg_width; j++)
-            {
                 tile_reg[i][j] = 7;
-                tile_reg_display[i][j].setFillColor(Colors::ReturnByIndex(tile_reg[i][j]));
-            }
         }
     }
     return result;
@@ -111,11 +107,9 @@ void Game::Run(const Time timer)
 {
     if(game_state == GameState::INPUT_SCREEN)
         dialog_box->UpdateActionsText(std::string("Menu[M]  Save[ENTER]  Retry[R]"));
-    if(game_state == GameState::LOSE_SCREEN)
-    {
-        if(saved)
-            dialog_box->UpdateActionsText(std::string("Menu[M]     Saved     Retry[R]"));
-    }
+    if(game_state == GameState::LOSE_SCREEN && saved)
+        dialog_box->UpdateActionsText(std::string("Menu[M]     Saved     Retry[R]"));
+
     if(game_state != GameState::GAME)
         return;
         
@@ -167,16 +161,10 @@ void Game::ResetGame()
     saved = false;
     tile_drop_speed = 550;
     score = 0;
-    current_tile_type = 0;
-    tile_texture.loadFromFile("../assets/tetris_tile_100_b90.png");
-    background = new GameBackground(tile_texture, texture_size);
     for(int i = 0; i < size_tile_reg_height; i++)
         for(int j = 0; j< size_tile_reg_width; j++)
         {
             tile_reg[i][j] = 0;
-            tile_reg_display[i][j].setSize(Vector2f(texture_size, texture_size));
-            tile_reg_display[i][j].setTexture(&tile_texture);
-            tile_reg_display[i][j].setPosition(Vector2f(WINDOW_WIDTH / 4 + j * texture_size + texture_size, i * texture_size));
             tile_reg_display[i][j].setFillColor(Color(122,122,122,122));
         }
 
@@ -186,19 +174,7 @@ void Game::ResetGame()
     next_tiles[1] = GenerateTile();
     next_tiles[2] = GenerateTile();
 
-    text_font.loadFromFile("../assets/PixeloidMono-d94EV.ttf");
-    score_title.setString("Score:\n");
-    score_title.setCharacterSize(24);
-    score_title.setFont(text_font);
     score_value.setString("000000000\n");
-    score_value.setCharacterSize(24);
-    score_value.setFont(text_font);
-    score_value.setPosition(Vector2f(score_title.getPosition().x, score_title.getPosition().y + 24));
-
-    pause_text.setString("PAUSE");
-    pause_text.setCharacterSize(28);
-    pause_text.setFont(text_font);
-    pause_text.setPosition(Vector2f(WINDOW_WIDTH / 2 - pause_text.getLocalBounds().getSize().x / 2, 10 * texture_size));
 }
 
 void Game::PauseGame()
@@ -214,7 +190,6 @@ void Game::InputNickname()
     nickname = new Textbox(text_font, texture_size);
     game_state = GameState::INPUT_SCREEN;
 }
-
 
 void Game::AddToNickname(const char c)
 {
@@ -246,35 +221,26 @@ void Game::NewTile()
     next_tiles[1] = next_tiles[2];
     next_tiles[2] = GenerateTile();
 }
-
+//to do better random
 Tiles *Game::GenerateTile()
 {
     int value = rand() % 7 + 1;
-                                    //value = 1;
     switch (value)
     {
         case 1:
             return new No1(texture_size, tile_texture);
-            break;
         case 2:
             return new No2(texture_size, tile_texture);
-            break;
         case 3:
             return new No3(texture_size, tile_texture);
-            break;
         case 4:
             return new No4(texture_size, tile_texture);
-            break;
         case 5:
             return new No5(texture_size, tile_texture);
-            break;
         case 6:
             return new No6(texture_size, tile_texture);
-            break;
         case 7:
             return new No7(texture_size, tile_texture);
-            break;
-        
         default:
             break;
     }
@@ -445,11 +411,9 @@ void Game::MoveToLowest()
 {
     if(game_state != GameState::GAME)
         return;
-    score += 10;
+    score += 5;
     while(current_tile->CheckUnder(tile_reg))
-    {
         this->LowerTile();
-    }
 }
 
 void Game::Animate(const Time text_box_parity)
@@ -457,7 +421,6 @@ void Game::Animate(const Time text_box_parity)
     if(game_state == GameState::INPUT_SCREEN)
         nickname->Animate(text_box_parity);
 }
-
 
 void Game::StartGame()
 {
@@ -485,29 +448,36 @@ void Game::Draw(RenderWindow &window)
 {
     background->Draw(window);
     for(int i = 0; i < size_tile_reg_height; i++)
-    {
         for(int j = 0; j<size_tile_reg_width; j++)
-        {
             window.draw(tile_reg_display[i][j]);
-        }
-    }
     current_tile->Draw(window);
     window.draw(score_title);
     window.draw(score_value);
     for(int i = 0; i < 3; i++)
-    {
         next_tiles[i]->DrawAt(window,Vector2f(next_tile_pos.x, next_tile_pos.y + 6 * i * texture_size));
+
+    switch(game_state)
+    {
+        case GameState::MAIN_MENU:
+            main_menu->Draw(window);
+            break;
+        case GameState::LEADERBOARD:
+            leaderboard->Draw(window);
+            break;
+        case GameState::PAUSE:
+            window.draw(pause_text);
+            break;
+        case GameState::LOSE_SCREEN:
+            dialog_box->Draw(window);
+            break;
+        case GameState::INPUT_SCREEN:
+            dialog_box->Draw(window);
+            nickname->Draw(window);
+            break;
+        default:
+            break;
     }
-    if(game_state == GameState::LOSE_SCREEN || game_state == GameState::INPUT_SCREEN)
-        dialog_box->Draw(window);
-    if(game_state == GameState::PAUSE)
-        window.draw(pause_text);
-    if(game_state == GameState::INPUT_SCREEN)
-        nickname->Draw(window);
-    if(game_state == GameState::MAIN_MENU)
-        main_menu->Draw(window);
-    if(game_state == GameState::LEADERBOARD)
-        leaderboard->Draw(window);
+
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)
@@ -518,30 +488,20 @@ GameBackground::GameBackground(const Texture& tile_texture, const float texture_
         border[i].setSize(Vector2f(texture_size, texture_size));
         border[i].setFillColor(Color(122,122,122));
         if(i == 0)
-        {
             border[i].setPosition(Vector2f(WINDOW_WIDTH / 4, 0));
-        }
         else if(i < 23)
-        {
             border[i].setPosition(Vector2f(WINDOW_WIDTH / 4, i * texture_size));
-        }
         else if(i < 35)
-        {
             border[i].setPosition(Vector2f((i - 22) * texture_size + WINDOW_WIDTH / 4, WINDOW_HEIGHT - texture_size));
-        }
         else
-        {
             border[i].setPosition(Vector2f(WINDOW_WIDTH / 4 + 13 * texture_size, WINDOW_HEIGHT - (i - 34) * texture_size));
-        }
     }
 }
 
 void GameBackground::Draw(RenderWindow &window)
 {
     for(int i = 0; i < size_border; i++)
-    {
         window.draw(border[i]);
-    }
 }
 
 LoseScreen::LoseScreen(const Font& font, const float texture_size, const std::string score)
@@ -594,6 +554,8 @@ Textbox::Textbox(const Font &font, const float texture_size)
 
 std::string Textbox::GetNickname()
 {
+    if(last_parity == 2)
+        nickname_string.pop_back();
     return nickname_string;
 }
 
