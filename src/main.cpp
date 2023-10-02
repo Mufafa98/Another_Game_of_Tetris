@@ -9,7 +9,6 @@ int main(){
     Clock tile_drop_speed;
     Clock text_box_parity;
     Game game;
-    std::cout<<sizeof(game);
     RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Another_Game_of_Tetris", Style::Close | Style::Titlebar);
     window.setVerticalSyncEnabled(true);
     while(window.isOpen()){
@@ -23,7 +22,32 @@ int main(){
                 }
                 case Event::KeyPressed:
                 {
-                    if(game.CheckLose() && game.CheckInputNickname() && !game.HasScoreBeenSaved())
+                    if(game.AreWeIn(Game::GameState::LEADERBOARD) && window_event.key.code == Keyboard::M)
+                        game.GoToMainMenu();
+                    if(game.AreWeIn(Game::GameState::MAIN_MENU))
+                    {
+                        switch (window_event.key.code)
+                        {
+                            case Keyboard::S:
+                            {
+                                game.StartGame();
+                                break;
+                            }
+                            case Keyboard::L:
+                            {
+                                game.GoToLeaderboard();
+                                break;
+                            }
+                            case Keyboard::Q:
+                            {
+                                window.close();
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                    else if(game.AreWeIn(Game::GameState::INPUT_SCREEN) && !game.HasScoreBeenSaved())
                     {
                         switch (window_event.key.code)
                         {
@@ -41,13 +65,14 @@ int main(){
                                 break;
                         }
                     }
-                    if(game.CheckLose())
+                    else if(game.AreWeIn(Game::GameState::LOSE_SCREEN))
                     {
                         switch (window_event.key.code)
                         {
-                            case Keyboard::Q:
+                            case Keyboard::M:
                             {
-                                window.close();
+                                game.ResetGame();
+                                game.GoToMainMenu();
                                 break;
                             }
                             case Keyboard::R:
@@ -122,7 +147,7 @@ int main(){
                 }
                 case Event::TextEntered:
                 {
-                    if(game.CheckLose() && game.CheckInputNickname() && !game.HasScoreBeenSaved())
+                    if(game.AreWeIn(Game::GameState::INPUT_SCREEN) && !game.HasScoreBeenSaved())
                     {
                         auto key_pressed = window_event.text.unicode;
                         if(key_pressed >= 32)

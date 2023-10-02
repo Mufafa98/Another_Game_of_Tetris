@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <map>
 #include "SFML/Graphics.hpp"
 #include "Props.hpp"
 #include "Tiles.hpp"
@@ -44,14 +45,34 @@ public:
     void Animate(const Time text_box_parity);
     void Draw(RenderWindow& window);
 };
+class MainMenu{
+    private:
+    Text start;
+    Text leaderboard;
+    Text exit_game;
+    
+    RectangleShape menu_screen;
+    Texture menu_screen_texture;
+    public:
+    MainMenu(const Font& font, const float texture_size);
+    void Draw(RenderWindow& window);
+};
+class LeaderBoard{
+    private:
+    Text leaderboard_display[10];
+    Text action;
+    RectangleShape leaderboard_screen;
+    Texture leaderboard_screen_texture;
+    public:
+    LeaderBoard(const Font& font, const float texture_size);
+    void Draw(RenderWindow& window);};
 class Game{
 private:
     bool saved;
-    bool running;
-    bool paused;
     bool need_restart;
-    bool need_save;
-    bool tile_reg[size_tile_reg_height][size_tile_reg_width];
+    
+    short game_state;
+    short tile_reg[size_tile_reg_height][size_tile_reg_width];
     short tile_drop_speed;
     short current_tile_type;
     unsigned int score;
@@ -61,6 +82,8 @@ private:
     Tiles* next_tiles[3];
     GameBackground *background;
     LoseScreen *dialog_box;
+    MainMenu* main_menu;
+    LeaderBoard* leaderboard;
     Textbox *nickname;
     RectangleShape tile_reg_display[size_tile_reg_height][size_tile_reg_width];
     Text score_title;
@@ -70,6 +93,14 @@ private:
     Font text_font;
     
 public:
+    enum GameState {
+        MAIN_MENU,
+        LEADERBOARD,
+        GAME,
+        PAUSE,
+        LOSE_SCREEN,
+        INPUT_SCREEN
+    };
     Game();
     ~Game();
 
@@ -85,11 +116,14 @@ public:
     void ResetGame();
     void PauseGame();
     void InputNickname();
-    bool CheckInputNickname();
     void AddToNickname(const char c);
     void RemFromNickname();
     void SaveScore();
     bool HasScoreBeenSaved();
+    void StartGame();
+    void GoToMainMenu();
+    void GoToLeaderboard();
+    bool AreWeIn(int game_state);
 
     void NewTile();
     Tiles* GenerateTile();

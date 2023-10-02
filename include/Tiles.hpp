@@ -161,10 +161,10 @@ protected:
 public:
     virtual void Rotate() = 0;
     void FitOnX();
-    bool CheckUnder(const bool tile_reg[21][12]);
-    bool CheckLeft(const bool tile_reg[21][12]);
-    bool CheckRight(const bool tile_reg[21][12]);
-    bool CheckForRotation(const bool tile_reg[21][12]);
+    bool CheckUnder(const short tile_reg[21][12]);
+    bool CheckLeft(const short tile_reg[21][12]);
+    bool CheckRight(const short tile_reg[21][12]);
+    bool CheckForRotation(const short tile_reg[21][12]);
 
     short GetX();
     short GetY();
