@@ -2,11 +2,8 @@
 
 Game::Game()
 {
-
+    game_state = GameState::MAIN_MENU;
     saved = false;
-    paused = false;
-    running = true;
-    need_save = false;
     tile_drop_speed = 550;
     score = 0;
     current_tile_type = 0;
@@ -42,7 +39,7 @@ Game::Game()
     pause_text.setFont(text_font);
     pause_text.setPosition(Vector2f(WINDOW_WIDTH / 2 - pause_text.getLocalBounds().getSize().x / 2, 10 * texture_size));
 
-    
+    main_menu = new MainMenu(text_font, texture_size);
 }
 Game::~Game()
 {
@@ -53,6 +50,7 @@ Game::~Game()
     delete next_tiles[2];
     delete dialog_box;
     delete nickname;
+    delete main_menu;
 }
 
 short Game::CheckLinesClear()
@@ -111,15 +109,15 @@ void Game::UpdateScore()
 
 void Game::Run(const Time timer)
 {
-    if(!running || paused)
+    if(game_state == GameState::INPUT_SCREEN)
+        dialog_box->UpdateActionsText(std::string("Menu[M]  Save[ENTER]  Retry[R]"));
+    if(game_state == GameState::LOSE_SCREEN)
     {
-        if(CheckInputNickname())
-            dialog_box->UpdateActionsText(std::string("Exit[Q]  Save[ENTER]  Retry[R]"));
         if(saved)
-            dialog_box->UpdateActionsText(std::string("Exit[Q]     Saved     Retry[R]"));
-        return;
+            dialog_box->UpdateActionsText(std::string("Menu[M]     Saved     Retry[R]"));
     }
-
+    if(game_state != GameState::GAME)
+        return;
         
     if(timer.asMilliseconds() >= tile_drop_speed)
     {
@@ -138,9 +136,7 @@ void Game::Run(const Time timer)
     }
     UpdateScore();
     if(CheckLose())
-    {
-        running = false;
-    }
+        game_state = GameState::LOSE_SCREEN;
     
 }
 
@@ -167,10 +163,13 @@ void Game::ModifyTileSpeed(const int value)
 
 void Game::ResetGame()
 {
-    running = true;
+    game_state = GameState::GAME;
+    saved = false;
     tile_drop_speed = 550;
     score = 0;
     current_tile_type = 0;
+    tile_texture.loadFromFile("../assets/tetris_tile_100_b90.png");
+    background = new GameBackground(tile_texture, texture_size);
     for(int i = 0; i < size_tile_reg_height; i++)
         for(int j = 0; j< size_tile_reg_width; j++)
         {
@@ -187,6 +186,7 @@ void Game::ResetGame()
     next_tiles[1] = GenerateTile();
     next_tiles[2] = GenerateTile();
 
+    text_font.loadFromFile("../assets/PixeloidMono-d94EV.ttf");
     score_title.setString("Score:\n");
     score_title.setCharacterSize(24);
     score_title.setFont(text_font);
@@ -195,24 +195,26 @@ void Game::ResetGame()
     score_value.setFont(text_font);
     score_value.setPosition(Vector2f(score_title.getPosition().x, score_title.getPosition().y + 24));
 
+    pause_text.setString("PAUSE");
+    pause_text.setCharacterSize(28);
+    pause_text.setFont(text_font);
+    pause_text.setPosition(Vector2f(WINDOW_WIDTH / 2 - pause_text.getLocalBounds().getSize().x / 2, 10 * texture_size));
 }
 
 void Game::PauseGame()
 {
-    paused = !paused;
+    if(game_state != GameState::PAUSE)
+        game_state = GameState::PAUSE;
+    else
+        game_state = GameState::GAME;
 }
 
 void Game::InputNickname()
 {
     nickname = new Textbox(text_font, texture_size);
-    need_save = true;
-
+    game_state = GameState::INPUT_SCREEN;
 }
 
-bool Game::CheckInputNickname()
-{
-    return need_save;
-}
 
 void Game::AddToNickname(const char c)
 {
@@ -226,22 +228,10 @@ void Game::RemFromNickname()
 
 void Game::SaveScore()
 {
-    struct stat{
-        char name[50];
-        unsigned int score;
-    };
-    stat output;
-    output.score = score;
-    std::FILE* leaderboard = fopen("../data/LeaderBoard.log", "a+");
-    std::string nick = nickname->GetNickname();
-    //vezi ce faci cu animatia
-    while(nick.length() < 50)
-        nick += ' ';
-    std::strncpy(output.name, nick.c_str(), 50 >nick.length() ? nick.length() : 50);
-    fwrite(&output, sizeof(stat), 1, leaderboard);
-    fclose(leaderboard);
-    need_save = false;
+    std::ofstream leaderboard_out("../data/LeaderBoard.log",std::ios::app);
+    leaderboard_out<<" <n> "<<nickname->GetNickname() << " <s> " << score;
     saved = true;
+    game_state = GameState::LOSE_SCREEN;
 }
 
 bool Game::HasScoreBeenSaved()
@@ -260,7 +250,7 @@ void Game::NewTile()
 Tiles *Game::GenerateTile()
 {
     int value = rand() % 7 + 1;
-                                    //value = 7;
+                                    //value = 1;
     switch (value)
     {
         case 1:
@@ -293,7 +283,7 @@ Tiles *Game::GenerateTile()
 
 void Game::RotateTile()
 {
-    if(!running || paused)
+    if(game_state != GameState::GAME)
         return;
     if (current_tile->CheckForRotation(tile_reg))
         current_tile->Rotate();
@@ -301,7 +291,7 @@ void Game::RotateTile()
 
 void Game::LowerTile()
 {
-    if(!running || paused)
+    if(game_state != GameState::GAME)
         return;
     if(current_tile->CheckUnder(tile_reg))
         current_tile->LowerTile();
@@ -437,7 +427,7 @@ void Game::LowerTile()
 
 void Game::MoveRight()
 {
-    if(!running || paused)
+    if(game_state != GameState::GAME)
         return;
     if(current_tile->CheckRight(tile_reg))
         current_tile->MoveRight();
@@ -445,7 +435,7 @@ void Game::MoveRight()
 
 void Game::MoveLeft()
 {
-    if(!running || paused)
+    if(game_state != GameState::GAME)
         return;
     if(current_tile->CheckLeft(tile_reg))
         current_tile->MoveLeft();
@@ -453,7 +443,7 @@ void Game::MoveLeft()
 
 void Game::MoveToLowest()
 {
-    if(!running || paused)
+    if(game_state != GameState::GAME)
         return;
     score += 10;
     while(current_tile->CheckUnder(tile_reg))
@@ -464,8 +454,31 @@ void Game::MoveToLowest()
 
 void Game::Animate(const Time text_box_parity)
 {
-    if(need_save)
+    if(game_state == GameState::INPUT_SCREEN)
         nickname->Animate(text_box_parity);
+}
+
+
+void Game::StartGame()
+{
+    game_state = GameState::GAME;
+}
+
+void Game::GoToMainMenu()
+{
+    delete dialog_box;
+    game_state = GameState::MAIN_MENU;
+}
+
+void Game::GoToLeaderboard()
+{
+    leaderboard = new LeaderBoard(text_font, texture_size);
+    game_state = GameState::LEADERBOARD;
+}
+
+bool Game::AreWeIn(int game_state)
+{
+    return game_state == this->game_state;
 }
 
 void Game::Draw(RenderWindow &window)
@@ -485,14 +498,16 @@ void Game::Draw(RenderWindow &window)
     {
         next_tiles[i]->DrawAt(window,Vector2f(next_tile_pos.x, next_tile_pos.y + 6 * i * texture_size));
     }
-    if(!running)
+    if(game_state == GameState::LOSE_SCREEN || game_state == GameState::INPUT_SCREEN)
         dialog_box->Draw(window);
-    if(paused)
+    if(game_state == GameState::PAUSE)
         window.draw(pause_text);
-    if(need_save)
+    if(game_state == GameState::INPUT_SCREEN)
         nickname->Draw(window);
-
-
+    if(game_state == GameState::MAIN_MENU)
+        main_menu->Draw(window);
+    if(game_state == GameState::LEADERBOARD)
+        leaderboard->Draw(window);
 }
 
 GameBackground::GameBackground(const Texture& tile_texture, const float texture_size)
@@ -541,7 +556,7 @@ LoseScreen::LoseScreen(const Font& font, const float texture_size, const std::st
     score_value.setFont(font);
     score_value.setPosition(Vector2f(WINDOW_WIDTH / 2 - score_value.getLocalBounds().getSize().x/2, 10 * texture_size));
     
-    actions.setString("Exit[Q] Save Score[S] Retry[R]");
+    actions.setString("Menu[M] Save Score[S] Retry[R]");
     actions.setCharacterSize(22);
     actions.setFont(font);
     actions.setPosition(Vector2f(WINDOW_WIDTH / 2 - actions.getLocalBounds().getSize().x/2, 12 * texture_size));
@@ -631,4 +646,122 @@ void Textbox::Animate(const Time text_box_parity)
 void Textbox::Draw(RenderWindow &window)
 {
     window.draw(nickname);
+}
+
+MainMenu::MainMenu(const Font &font, const float texture_size)
+{
+    start.setString("Start[S]");
+    start.setCharacterSize(22);
+    start.setFont(font);
+    start.setPosition(Vector2f(WINDOW_WIDTH / 2 - start.getLocalBounds().getSize().x/2, 9 * texture_size));
+
+    leaderboard.setString("Leaderboard[L]");
+    leaderboard.setCharacterSize(22);
+    leaderboard.setFont(font);
+    leaderboard.setPosition(Vector2f(WINDOW_WIDTH / 2 - leaderboard.getLocalBounds().getSize().x/2, 10 * texture_size));
+    
+    exit_game.setString("Exit[Q]");
+    exit_game.setCharacterSize(22);
+    exit_game.setFont(font);
+    exit_game.setPosition(Vector2f(WINDOW_WIDTH / 2 - exit_game.getLocalBounds().getSize().x/2, 11 * texture_size));
+    
+
+    menu_screen_texture.loadFromFile("../assets/lose_screen.png");
+    menu_screen.setSize(Vector2f(14 * texture_size, 5 * texture_size));
+    menu_screen.setPosition(Vector2f(WINDOW_WIDTH / 4, 8 * texture_size));
+    menu_screen.setTexture(&menu_screen_texture);
+}
+
+void MainMenu::Draw(RenderWindow &window)
+{
+    window.draw(menu_screen);
+    window.draw(start);
+    window.draw(leaderboard);
+    window.draw(exit_game);
+}
+
+LeaderBoard::LeaderBoard(const Font &font, const float texture_size)
+{
+    std::vector<std::pair<std::string, unsigned int>> stats;
+    std::ifstream leaderboard_in("../data/LeaderBoard.log");
+    short last_token = 0;
+    std::string temp_token;
+    std::string nickname_to_store = "";
+    unsigned int score_to_store = 0;
+    while(leaderboard_in >> temp_token)
+    {
+        if(temp_token == "<n>")
+        {
+            last_token = 1;
+        }
+        else if(temp_token == "<s>")
+            last_token = 2;
+        else
+        {
+            if(last_token == 1)
+            {
+                nickname_to_store += temp_token;
+            }
+            else if(last_token == 2)
+            {
+                for(int i = 0; i < temp_token.length(); i++)
+                {
+                    score_to_store = score_to_store * 10 + temp_token[i] - '0';
+                }
+                stats.push_back(std::pair<std::string, unsigned int>(nickname_to_store, score_to_store));
+                nickname_to_store = "";
+                score_to_store = 0;
+            }
+        }
+    }
+    bool swapped;
+    do
+    {
+        swapped = false;
+        for(int i = 0; i < stats.size() - 1; i++)
+        {
+            if(stats[i].second < stats[i + 1].second)
+            {
+                std::swap(stats[i], stats[i + 1]);
+                swapped = true;
+            }
+        }
+    } while (swapped);
+    for(int i = 0; i < stats.size() - 1; i++)
+        for(int j = i + 1; j < stats.size(); j++)
+            if(stats[i].first == stats[j].first)
+                stats.erase(stats.begin() + j);
+    for(int i = 10; i < stats.size(); i++)
+        stats.erase(stats.begin() + i);
+    for(int i = 0; i < std::min((int)10, (int)stats.size()); i++)
+    {
+        std::string temp_string = stats[i].first;
+        leaderboard_display[i].setCharacterSize(22);
+        leaderboard_display[i].setFont(font);
+        do
+        {
+            temp_string += ' ';
+           leaderboard_display[i].setString(temp_string + std::to_string(stats[i].second));
+        } while (leaderboard_display[i].getLocalBounds().getSize().x <= 12 * texture_size);
+        
+        leaderboard_display[i].setPosition(Vector2f(WINDOW_WIDTH / 2 - leaderboard_display[i].getLocalBounds().getSize().x/2, 5 * texture_size + i * texture_size));
+    }
+    action.setString("Back[M]");
+    action.setCharacterSize(22);
+    action.setFont(font);
+    action.setPosition(Vector2f(WINDOW_WIDTH / 2 - action.getLocalBounds().getSize().x/2, 16 * texture_size));
+
+
+    leaderboard_screen_texture.loadFromFile("../assets/lose_screen.png");
+    leaderboard_screen.setSize(Vector2f(14 * texture_size, 14 * texture_size));
+    leaderboard_screen.setPosition(Vector2f(WINDOW_WIDTH / 4, 4 * texture_size));
+    leaderboard_screen.setTexture(&leaderboard_screen_texture);
+}
+
+void LeaderBoard::Draw(RenderWindow &window)
+{
+    window.draw(leaderboard_screen);
+    for(int i = 0; i < 10; i++)
+        window.draw(leaderboard_display[i]);
+    window.draw(action);
 }

@@ -40,7 +40,7 @@ void Tiles::FitOnX()
         }
     }
 }
-bool Tiles::CheckUnder(const bool tile_reg[21][12])
+bool Tiles::CheckUnder(const short tile_reg[21][12])
 {
     if(y_pos == 17)
         return false;
@@ -130,7 +130,7 @@ bool Tiles::CheckUnder(const bool tile_reg[21][12])
     return true;
 }
 
-bool Tiles::CheckLeft(const bool tile_reg[21][12])
+bool Tiles::CheckLeft(const short tile_reg[21][12])
 {
     switch (tile_type)
     {
@@ -223,7 +223,7 @@ bool Tiles::CheckLeft(const bool tile_reg[21][12])
     return true;
 }
 
-bool Tiles::CheckRight(const bool tile_reg[21][12])
+bool Tiles::CheckRight(const short tile_reg[21][12])
 {
     switch (tile_type)
     {
@@ -316,7 +316,7 @@ bool Tiles::CheckRight(const bool tile_reg[21][12])
     return true;
 }
 
-bool Tiles::CheckForRotation(const bool tile_reg[21][12])
+bool Tiles::CheckForRotation(const short tile_reg[21][12])
 {
     switch (tile_type)
     {
